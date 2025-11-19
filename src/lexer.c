@@ -11,12 +11,12 @@ enum e_token_type	getchartype(char c)
 		return (CHAR_PIPE);
 	if (c == '&')
 		return (CHAR_AMPERSAND);
-	if (c == ' ')
-		return (CHAR_WHITESPACE);
 	if (c == ';')
 		return (CHAR_SEMICOLON);
 	if (c == '\\')
 		return (CHAR_ESCAPESEQUENCE);
+	if (c == ' ')
+		return (CHAR_WHITESPACE);
 	if (c == '\t')
 		return (CHAR_TAB);
 	if (c == '\n')
@@ -65,36 +65,39 @@ int lexer_util(char c, t_token *token)
 	return (0);
 }
 
+//int	lexer_dquotes(char *str, t_token *token, int i)
+// {
+// 	return 0;
+// }
 int	lexer_quotes(char *str, t_token *token)
 {
-	int	i;
-	int	start;
-	int	type;
+	int					i;
+	int					start;
+	enum e_token_type	type;
 	
-	if (!str)
-        return (-1);
-    if (str[i] != CHAR_QUOTE && str[i] != CHAR_DQUOTE)
-        return (-1);
-	if (str[i] == CHAR_DQUOTE)
-        type = CHAR_DQUOTE;
-    else
-        type = CHAR_QUOTE;
-	i++;
-    start = i; 
+	i = 0;
+	if (!str || (str[i] != CHAR_QUOTE && str[i] != CHAR_DQUOTE))
+		return (-1);
+	type = str[i++];
+	start = i; 
 	while (str[i] && str[i] != type)
 	{
 		if (type == CHAR_DQUOTE && str[i] == '$')
-		while (str[i] != '\0' && getchartype(str[i]) == CHAR_GENERAL)
 		{
-			if (type == 1 && getchartype(str[i]) == CHAR_DOLLAR)
-			{
-				create_token(CHAR_DOLLAR, "$\0");
-				create_token(CHAR_GENERAL, ft_substr(str, 0, i));
-			}
+			if (i > start)
+				lst_add_token_back(&token, create_token(CHAR_GENERAL, ft_substr(str, start, i - start)));
+			lst_add_token_back(&token, create_token(CHAR_DOLLAR, "$"));
 			i++;
+			start = i;
+			continue ;
 		}
+		i++;
 	}
-	return 0;
+	if (i > start)
+		lst_add_token_back(&token, create_token(CHAR_GENERAL, ft_substr(str, start, i - start)));
+	if (str[i] != type)
+		return (-2);
+	 return (i + 1);
 }
 
 t_token	*lexer(char *str)
@@ -108,11 +111,16 @@ t_token	*lexer(char *str)
 	while (str[i] != '\0')
 	{
 		start = i;
-
 		i += lexer_util(str[i], token) + lexer_doble(str[i],str[i + 1], token);
-		
 		if (start != i)
 			continue ;
+		if (getchartype(str[i]) != CHAR_GENERAL)
+		{
+			lst_add_token_back(&token,
+				create_token(str[i], ft_substr(str, i, 1)));
+			i++;
+			continue;
+		}
 		while (str[i] != '\0' && getchartype(str[i]) == CHAR_GENERAL)
 			i++;
 		lst_add_token_back(&token,
