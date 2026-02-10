@@ -63,19 +63,19 @@ BONUSOBJ = $(BONUSSRC:.c=.o)
 all: $(NAME)
 
 $(NAME): $(OBJ)
-	$(AR) $(NAME) $(OBJ)
+	@$(AR) $(NAME) $(OBJ)
 
 bonus: $(OBJ) $(BONUSOBJ) $(NAME)
-		$(AR) $(NAME) $(OBJ) $(BONUSOBJ);
+		@$(AR) $(NAME) $(OBJ) $(BONUSOBJ);
 
 %.o: %.c Makefile $(INCLUDE)
-	$(CC) $(CFLAGS) -c $< -o $@
+	@$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	$(RM) $(OBJ) $(BONUSOBJ)
+	@$(RM) $(OBJ) $(BONUSOBJ)
 
 fclean: clean
-	$(RM) $(NAME)
+	@$(RM) $(NAME)
 	
 re: fclean all
 

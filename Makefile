@@ -1,56 +1,134 @@
-NAME			= minishell
-CC				= cc
-CFLAGS			= -Wall -Wextra -Werror
-MKDIR			= mkdir -p
-RM				= rm -rf
-LINKER  	    = -lreadline
+# Compiler and flags
+CC = cc
+CFLAGS = -Wall -Wextra -Werror #-fsanitize=address -fsanitize=leak
+READLINE = -lreadline -lncurses
+
+MAKEFLAGS += --no-print-directory
+# Program name
+NAME = minishell
+
+# Directories
+SRCS_DIR = src
+OBJS_DIR = objs
+INCLUDES_DIR = include
+DIRS := $(shell find $(SRCS_DIR) -type d | sed "s/$(SRCS_DIR)/$(OBJS_DIR)/")
 
 # Includes
-INCLUDES_DIR 	= include
-INCLUDES_FLAG 	= -I$(INCLUDES_DIR)
-INCLUDES		= $(wildcard $(INCLUDES_DIR)/*.h)
+INCLUDES_FLAG = -I$(INCLUDES_DIR) -Ilibft/
 
-# Sources
-SRCS_DIR		= src/
-SRC_FILES		= main.c \
-				  lexer.c
-
-# Libraries
+# Libft
 LIBFT = libft/libft.a
-LIBS = -Llibft -lft
+LIBS = -Llibft -lft $(READLINE)
 
-# Objects
-OBJS_DIR		= objs/
-OBJ_FILES		= $(SRC_FILES:.c=.o)
-OBJS			= $(addprefix $(OBJS_DIR), $(OBJ_FILES))
+# ---------------------------------------------------------
+#                 SOURCE FILE DETECTION
+# ---------------------------------------------------------
+
+# Main only in src/
+MAIN = $(SRCS_DIR)/main.c
+
+# Parser sources
+PARSER_SRCS = \
+		$(SRCS_DIR)/parser/parser.c \
+		$(SRCS_DIR)/parser/ast.c \
+		$(SRCS_DIR)/parser/pipe.c \
+		$(SRCS_DIR)/parser/redirection.c \
 
 
-all : $(OBJS_DIR) $(NAME)
+# Lexer sources
+LEXER_SRCS = \
+		$(SRCS_DIR)/lexer/lexer.c \
+		$(SRCS_DIR)/lexer/simple_quot.c \
+		$(SRCS_DIR)/lexer/list.c \
+		$(SRCS_DIR)/lexer/utils.c
 
-$(OBJS_DIR) :
-	@$(MKDIR) $(OBJS_DIR)
+# execute sources
+EXECUTE_SRCS = \
+		$(SRCS_DIR)/exec/executor.c \
+		$(SRCS_DIR)/exec/get_path.c \
+		$(SRCS_DIR)/exec/exec_redirection.c \
+		$(SRCS_DIR)/exec/exec_pipe.c \
+		$(SRCS_DIR)/exec/utils.c
 
-$(NAME) : $(OBJS) Makefile $(LIBFT)
-	@echo $(GREEN) " - Compiling $(NAME)..." $(RESET)
-	@$(CC) $(CFLAGS) $(OBJS) $(LINKER) -o $(NAME) $(LIBS)
-	@echo $(YELLOW) " - Compiling FINISHED" $(RESET)
+SIGNALS_SRCS = \
+		$(SRCS_DIR)/signal/signals.c
 
-$(OBJS_DIR)%.o : $(SRCS_DIR)%.c $(INCLUDES)
-	@$(CC) $(CFLAGS) $(INCLUDES_FLAG) -c $< -o $@	
+# Utility functions
+GLOBAL_UTILS = \
+		$(SRCS_DIR)/global_utils/free_utils.c \
+		$(SRCS_DIR)/global_utils/init.c
 
-# Library Rules
+# Builtin sources
+BUILTIN_SRCS = \
+		$(SRCS_DIR)/builtins/ft_pwd.c \
+		$(SRCS_DIR)/builtins/ft_echo.c \
+		$(SRCS_DIR)/builtins/ft_cd.c \
+		$(SRCS_DIR)/builtins/ft_exit.c \
+		$(SRCS_DIR)/builtins/ft_export.c \
+		$(SRCS_DIR)/builtins/ft_export_utils.c \
+		$(SRCS_DIR)/builtins/builtin.c \
+		$(SRCS_DIR)/builtins/ft_unset.c \
+		$(SRCS_DIR)/builtins/ft_env.c
+
+# Combine all sources
+SRCS =	$(MAIN) \
+		$(PARSER_SRCS) \
+		$(LEXER_SRCS) \
+		$(BUILTIN_SRCS) \
+		$(EXECUTE_SRCS) \
+		$(SIGNALS_SRCS) \
+		$(GLOBAL_UTILS)
+
+# Object files
+OBJS = $(SRCS:$(SRCS_DIR)/%.c=$(OBJS_DIR)/%.o)
+
+
+# Colors
+GREEN  = \033[0;32m
+YELLOW = \033[0;33m
+RED    = \033[0;31m
+RESET  = \033[0m
+
+
+# ---------------------------------------------------------
+#                   COMPILATION RULES
+# ---------------------------------------------------------
+
+all: $(OBJS_DIR) $(LIBFT) $(NAME)
+
+$(OBJS_DIR):
+	@mkdir -p $(DIRS)
+
+$(NAME): $(OBJS)
+	@echo "$(GREEN) - Building $(NAME)...$(RESET)"
+	@$(CC) $(CFLAGS) $(OBJS) -o $(NAME) $(LIBS)
+	@echo "$(YELLOW) - Compilation finished!$(RESET)"
+
+$(OBJS_DIR)/%.o: $(SRCS_DIR)/%.c
+	@$(CC) $(CFLAGS) $(INCLUDES_FLAG) -c $< -o $@
+
+
+# ---------------------------------------------------------
+#                        LIBFT
+# ---------------------------------------------------------
 $(LIBFT):
-	@make -C libft
+	@$(MAKE) -C libft
 
-clean :
-	@$(RM) $(OBJS_DIR)
-	@make clean -C libft
-	@echo $(RED) " - Cleaned!" $(RESET)
+# ---------------------------------------------------------
+#                      CLEAN RULES
+# ---------------------------------------------------------
+clean:
+	@rm -rf $(OBJS_DIR)
+	@$(MAKE) -C libft clean
+	@echo "$(RED) - Objects cleaned$(RESET)"
 
-fclean : clean
-	@$(RM) $(NAME) $(LIBFT)
-	@echo $(RED) " - Full Cleaned!" $(RESET)
+fclean: clean
+	@rm -f $(NAME)
+	@$(MAKE) -C libft fclean
+	@echo "$(RED) - Full clean done$(RESET)"
 
 re: fclean all
 
-.PHONY: all clean fclean re libft
+nvim: fclean
+
+.PHONY: all clean fclean re nvim
