@@ -12,99 +12,43 @@
 
 #include "minishell.h"
 
-/*
- * fill the array with the values of the input
- */
- int	fill_array(t_token *token, t_ast *ast)
+static char	**parse_args_util(t_token **token, int size)
 {
-	t_token	*buf;
+	char	**args;
 	int		i;
 
-	buf = token;
+	args = malloc(sizeof(char *) * (size + 1));
+	if (!args)
+		return (NULL);
 	i = 0;
-	while (buf)
+	while (*token && (*token)->type_tok == T_STRING)
 	{
-		if (buf->type_tok == T_STRING)
+		args[i] = ft_strdup((*token)->data);
+		if (!args[i])
 		{
-			ast->args[i] = ft_strdup(buf->data);
-			if (!ast->args[i])
-			{
-				while (i > 0)
-					free(ast->args[--i]);
-				return (-1);
-			}
-			i++;
+			while (i-- > 0)
+				free(args[i]);
+			free(args);
+			return (NULL);
 		}
-		buf = buf->next;
+		i++;
+		*token = (*token)->next;
 	}
-	ast->args[i] = NULL;
-	return (0);
+	args[i] = NULL;
+	return (args);
 }
 
-/*
- * create a new array of string to put the value
- 
-static int	allocate_array(t_token *token, t_ast *ast)
+char	**parse_args(t_token **token)
 {
-	int		count;
-	t_token	*buf;
+	int		size;
+	t_token	*tmp;
 
-	buf = token;
-	count = 0;
-	while (buf)
+	size = 0;
+	tmp = *token;
+	while (tmp && tmp->type_tok == T_STRING)
 	{
-		if (buf->type_tok == T_STRING)
-			count++;
-		buf = buf->next;
+		size++;
+		tmp = tmp->next;
 	}
-	if (count == 0)
-		return (0);
-	ast->args = ft_calloc(count + 1, sizeof(char *));
-	if (!ast->args)
-		return (-1);
-	if (fill_array(token, ast) < 0)
-	{
-		free_string_array(ast->args);
-		ast->args = NULL;
-		return (-1);
-	}
-	return (0);
-}*/
-
-int	ft_heredoc(t_token *token, t_ast *ast)
-{
-	if (!token || !ast)
-		return (-1);
-	if (token->type_tok != T_HEREDOC)
-		return (0);
-	if (!token->next || !token->next->data)
-		return (-1);
-	ast->heredocs = malloc(sizeof(t_heredoc));
-	if	(!ast->heredocs)	
-		return (-1);
-	ast->heredocs->delimiter = ft_strdup(token->next->data);
-	if (!ast->heredocs->delimiter)
-	{
-		free(ast->heredocs);
-		ast->heredocs = NULL;
-		return (-1);
-	}
-	ast->heredocs->expand = !token->next->quoted;
-	ast->heredocs->fd = -1;
-	return (1);
+	return (parse_args_util(token, size));
 }
-/*
-int	create_ast(t_token *token, t_ast *ast)
-{
-	if (!token || !ast)
-		return (-1);
-	int hd_status = ft_heredoc(token, ast);
-	if (hd_status == -1) // Erro real de malloc
-		return (-1);
-	if (parse_pipe(&token, ast))
-		return (1);
-	if (redirection(&token, ast))
-		return (1);
-	return (allocate_array(token, ast));
-}*/
-
