@@ -17,8 +17,6 @@ int	g_signal = 0;
 
 int	shell_loop(t_shell *sh)
 {
-	sh->tokens = NULL;
-	sh->ast = NULL;
 	set_signals_prompt();
 	sh->str = readline("minishell> ");
 	if (sh->str == NULL)
@@ -34,8 +32,13 @@ int	shell_loop(t_shell *sh)
 	}
 	add_history(sh->str);
 	sh->tokens = lexer(sh->str, sh->envp, sh->exit_status);
-	if (parser(sh) == 1)
-		sh->exit_status = execute_ast(sh->ast, sh->envp, 0);
+	if(sh->tokens && check_tokens(sh->tokens) == 2)
+	{
+		sh->exit_status = 2;
+		return (1);
+	}
+	sh->ast = parser(sh);
+	sh->exit_status = execute_ast(sh->ast, sh->envp, 0);
 	g_signal = 0;
 	return (1);
 }

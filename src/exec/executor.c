@@ -11,11 +11,8 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
-
 /*
  * execute a simple command
- 
-
 void	execute_simple(t_ast *node, t_shell *sh)
 {
 	char	*path;
@@ -89,8 +86,6 @@ void	exec_node(t_ast *node, t_shell *sh)
 	else
 		sh->exit_status = 1;
 }*/
-
-
 /*
 void	execute_ast(t_ast *ast, t_shell *sh)
 {
@@ -112,20 +107,21 @@ void	execute_ast(t_ast *ast, t_shell *sh)
 		exec_node(ast, sh);
 }
 */
+
 int	exec_builtin_parent(t_ast *node, char **envp)
 {
-    int saved_stdin;
-    int saved_stdout;
+	int	saved_stdin;
+	int	saved_stdout;
 	int	return_value;
 
 	saved_stdin = dup(STDIN_FILENO);
 	saved_stdout = dup(STDOUT_FILENO);
-    apply_redirections(node->redirs);
-    return_value = builtin(node->args, envp);
-    dup2(saved_stdin, STDIN_FILENO);
-    dup2(saved_stdout, STDOUT_FILENO);
-    close(saved_stdin);
-    close(saved_stdout);
+	apply_redirections(node->redirs);
+	return_value = builtin(node->args, envp);
+	dup2(saved_stdin, STDIN_FILENO);
+	dup2(saved_stdout, STDOUT_FILENO);
+	close(saved_stdin);
+	close(saved_stdout);
 	return (return_value);
 }
 
@@ -158,27 +154,32 @@ int	execute_cmd(t_ast *node, char **envp, int in_pipe)
 		return (1);
 	if (is_builtin(node->args[0]) && !in_pipe)
 		return (exec_builtin_parent(node, envp));
-	//set_signals_exec();
-	if (in_pipe)
-		execute(node, envp);
 	pid = fork();
+	if (pid < 0)
+	{
+		perror("fork");
+		return (1);
+	}
 	if (pid == 0)
 	{
 		set_signals_child();
 		execute(node, envp);
+		exit(127);
 	}
 	waitpid(pid, &status, 0);
-    if (WIFEXITED(status))
-        return (WEXITSTATUS(status));
-    if (WIFSIGNALED(status))
-        return (128 + WTERMSIG(status));
-    return (1);
+	if (WIFEXITED(status))
+		return (WEXITSTATUS(status));
+	if (WIFSIGNALED(status))
+		return (128 + WTERMSIG(status));
+	return (1);
 }
 
-int execute_ast(t_ast *node, char **envp, int in_pipe)
+int	execute_ast(t_ast *node, char **envp, int in_pipe)
 {
 	if (!node)
 		return (1);
+	signal(SIGINT, SIG_IGN);
+	signal(SIGQUIT, SIG_IGN);
 	if (node->type == T_PIPE)
 		return (execute_pipe(node, envp));
 	return (execute_cmd(node, envp, in_pipe));

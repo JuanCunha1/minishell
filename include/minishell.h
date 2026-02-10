@@ -106,12 +106,11 @@ typedef struct s_ast
 	struct s_ast	*right;
 }	t_ast;
 
-/*STRUCT BASE, TIPICA STRUCT PARA PASAR VARIABLES GENERALES*/
 typedef struct s_shell
 {
 	char		*str;
 	char		**envp;
-	int			exit_status; //probable futuro manejo de exit
+	int			exit_status;
 	t_token		*tokens;
 	t_ast		*ast;
 	int			in_pipeline;
@@ -137,7 +136,7 @@ t_token *lexer(const char *input, char **env, int exit_status);
 
 
 /*Parser*/
-int		parser(t_shell *sh);
+t_ast	*parser(t_shell *sh);
 int		create_ast(t_token *token, t_ast *ast);
 //int		redirection(t_token **token, t_ast *ast);
 //int		parse_pipe(t_token **token, t_ast *ast);
@@ -209,4 +208,9 @@ int		execute_cmd(t_ast *node, char **envp, int in_pipe);
 void set_signals_prompt(void);
 void sigint_handler(int sig);
 int 	execute_pipe_list(t_pipe *head, char **envp);
+t_ast	*parse_command_segment(t_token **token);
+void	execute(t_ast *node, char **envp);
+t_pipe	*build_pipe_list(t_ast *ast);
+int		check_tokens(t_token *token);
+int	is_operator(t_type type);
 #endif

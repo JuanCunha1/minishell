@@ -31,6 +31,16 @@ static int	open_redir_file(t_redir *redir)
 	return (fd);
 }
 
+static void	redirect_dup(int fd, int target)
+{
+	if (dup2(fd, target) < 0)
+	{
+		perror("dup2");
+		close(fd);
+		exit(1);
+	}
+}
+
 int	apply_redirections(t_redir *redir)
 {
 	int	fd;
@@ -39,9 +49,9 @@ int	apply_redirections(t_redir *redir)
 	{
 		fd = open_redir_file(redir);
 		if (redir->type == T_REDIR_IN)
-            dup2(fd, STDIN_FILENO);
-        else
-            dup2(fd, STDOUT_FILENO);
+			redirect_dup(fd, STDIN_FILENO);
+		else
+        	redirect_dup(fd, STDOUT_FILENO);
         close(fd);
         redir = redir->next;
 	}

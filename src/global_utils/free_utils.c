@@ -25,7 +25,24 @@ void free_redirs(t_redir *redir)
         redir = tmp;
     }
 }
+void	*free_pipe_list(t_pipe *head)
+{
+	t_pipe *tmp;
 
+	while (head)
+	{
+		tmp = head->next;
+		if (head->input_fd != -1 && head->input_fd != STDIN_FILENO)
+			close(head->input_fd);
+		if (head->pipe_fd[0] != -1)
+			close(head->pipe_fd[0]);
+		if (head->pipe_fd[1] != -1)
+			close(head->pipe_fd[1]);
+		free(head);
+		head = tmp;
+	}
+	return (NULL);
+}
 void	free_ast(t_ast *node)
 {
 	int	i;
@@ -42,7 +59,7 @@ void	free_ast(t_ast *node)
 		free(node->args);
 		node->args = NULL;
 	}
-	
+
 	free_redirs(node->redirs);
 	//free_heredocs(node->heredocs);
 	node->redirs = NULL;
@@ -66,10 +83,10 @@ void	free_shell(t_shell *sh)
 	}
 	if (sh->ast)
 	{
-		
+
 		free_ast(sh->ast);
 		sh->ast = NULL;
-	}	
+	}
 }
 
 void	free_tokens(t_token *token)

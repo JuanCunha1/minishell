@@ -50,11 +50,14 @@ EXECUTE_SRCS = \
 		$(SRCS_DIR)/exec/get_path.c \
 		$(SRCS_DIR)/exec/exec_redirection.c \
 		$(SRCS_DIR)/exec/exec_pipe.c \
-		$(SRCS_DIR)/exec/exec_heredocs.c \
+		$(SRCS_DIR)/exec/exec_heredoc.c \
 		$(SRCS_DIR)/exec/utils.c
 
 SIGNALS_SRCS = \
 		$(SRCS_DIR)/signal/signals.c
+
+SYNTAX_ERROR = \
+		$(SRCS_DIR)/syntax_error/syntax_error.c
 
 # Utility functions
 GLOBAL_UTILS = \
@@ -80,6 +83,7 @@ SRCS =	$(MAIN) \
 		$(BUILTIN_SRCS) \
 		$(EXECUTE_SRCS) \
 		$(SIGNALS_SRCS) \
+		$(SYNTAX_ERROR) \
 		$(GLOBAL_UTILS)
 
 # Object files
