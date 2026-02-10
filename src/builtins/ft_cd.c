@@ -3,12 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   ft_cd.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rubmedin <rubmedin@student.42barcelona.co  +#+  +:+       +#+        */
+/*   By: jmarques <jmarques@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/04 15:46:14 by rubmedin          #+#    #+#             */
-/*   Updated: 2025/12/04 15:46:48 by rubmedin         ###   ########.fr       */
+/*   Created: 2026/02/10 11:54:57 by jmarques          #+#    #+#             */
+/*   Updated: 2026/02/10 11:55:26 by jmarques         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 #include "minishell.h"
 

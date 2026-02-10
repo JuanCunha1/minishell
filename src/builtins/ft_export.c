@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_export.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rubmedin <rubmedin@student.42barcelona.co  +#+  +:+       +#+        */
+/*   By: jmarques <jmarques@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/07 20:45:50 by rubmedin          #+#    #+#             */
-/*   Updated: 2025/12/07 20:59:42 by rubmedin         ###   ########.fr       */
+/*   Created: 2026/02/10 12:01:56 by jmarques          #+#    #+#             */
+/*   Updated: 2026/02/10 12:02:01 by jmarques         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
