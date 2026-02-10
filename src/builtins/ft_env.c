@@ -1,28 +1,26 @@
 #include "minishell.h"
 
-void	ft_env(t_shell *sh)
+int	ft_env(char **args, char **envp)
 {
 	int	i;
 
-	if (!sh || !sh->envp)
-		return ;
-	if (sh->ast->args[1] && sh->ast->args[1][0] == '-')
+	if (!envp || args[1])
+		return (1);
+	if (args[1] && args[1][0] == '-')
 	{
-		printf("env: invalid option '%s'\n", sh->ast->args[1]);
-		sh->exit_status = 125;
-		return ;
+		printf("env: invalid option '%s'\n", args[1]);
+		return (125);
 	}
-	if (sh->ast->args[1])
+	if (args[1])
 	{
-		printf("env: '%s': No such file or directory\n", sh->ast->args[1]);
-		sh->exit_status = 127;
-		return ;
+		printf("env: '%s': No such file or directory\n", args[1]);
+		return (127);
 	}
 	i = 0;
-	while (sh->envp[i])
+	while (envp[i])
 	{
-		printf("%s\n", sh->envp[i]);
+		printf("%s\n", envp[i]);
 		i++;
 	}
-	sh->exit_status = 0;
+	return (0);
 }

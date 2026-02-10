@@ -38,9 +38,11 @@ PARSER_SRCS = \
 # Lexer sources
 LEXER_SRCS = \
 		$(SRCS_DIR)/lexer/lexer.c \
-		$(SRCS_DIR)/lexer/simple_quot.c \
-		$(SRCS_DIR)/lexer/list.c \
-		$(SRCS_DIR)/lexer/utils.c
+		$(SRCS_DIR)/lexer/utils.c \
+		$(SRCS_DIR)/lexer/tokenizer.c \
+		$(SRCS_DIR)/lexer/quotes.c \
+		$(SRCS_DIR)/lexer/states.c \
+		$(SRCS_DIR)/lexer/expand_var.c
 
 # execute sources
 EXECUTE_SRCS = \
@@ -48,6 +50,7 @@ EXECUTE_SRCS = \
 		$(SRCS_DIR)/exec/get_path.c \
 		$(SRCS_DIR)/exec/exec_redirection.c \
 		$(SRCS_DIR)/exec/exec_pipe.c \
+		$(SRCS_DIR)/exec/exec_heredocs.c \
 		$(SRCS_DIR)/exec/utils.c
 
 SIGNALS_SRCS = \

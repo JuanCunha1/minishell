@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-static t_token	*get_first_pipe_token(t_token *token, t_token **prev_to_pipe)
+t_token	*get_first_pipe_token(t_token *token, t_token **prev_to_pipe)
 {
 	t_token	*curr;
 	t_token	*prev;
@@ -37,8 +37,8 @@ static t_token	*get_first_pipe_token(t_token *token, t_token **prev_to_pipe)
 
 /*
  * set memory allocation for left and right side of the tree
- */
-static int	init_pipe_ast_children(t_ast *ast, t_token *pipe,
+ *//*
+int	init_pipe_ast_children(t_ast *ast, t_token *pipe,
 	t_token *saved_next, t_token *prev)
 {
 	saved_next = pipe->next;
@@ -65,7 +65,7 @@ static int	init_pipe_ast_children(t_ast *ast, t_token *pipe,
 	return (0);
 }
 
-static int	free_pipe_ast(t_ast *ast)
+int	free_pipe_ast(t_ast *ast)
 {
 	free_ast(ast->left);
 	free_ast(ast->right);
@@ -90,7 +90,7 @@ int	parse_pipe_right(t_token *saved_next,
 	pipe->next = saved_next;
 	return (1);
 }
-
+*/
 /*
  * finds the first | token
  * prev points to the token before the |
@@ -101,6 +101,7 @@ int	parse_pipe_right(t_token *saved_next,
  * return = 1 -> pipe parsed successfully
  * return = -1 -> error
  */
+ /*
 int	parse_pipe(t_token **token, t_ast *ast)
 {
 	t_token	*prev;
@@ -127,4 +128,24 @@ int	parse_pipe(t_token **token, t_ast *ast)
 		return (-1);
 	*token = pipe;
 	return (1);
+}*/
+t_ast *parse_pipe(t_token **token)
+{
+    t_ast	*left;
+    t_ast	*node;
+
+	left = parse_redirection(token);
+	if (*token && (*token)->type_tok == T_PIPE)
+	{
+		node = malloc(sizeof(t_ast));
+		if (!node)
+			return (NULL);
+		node->type = T_PIPE;
+		node->left = left;
+		node->right = parse_pipe(&(*token)->next);
+		node->args = NULL;
+		node->redirs = NULL;
+		return (node);
+	}
+	return (left);
 }

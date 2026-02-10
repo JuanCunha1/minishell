@@ -32,25 +32,26 @@ int	unset_util(char **envp, char *name, int i)
 	return (1);
 }
 
-void	ft_unset(t_shell *shell)
+int	ft_unset(char **args, char **envp)
 {
 	int		i;
 	char	*name;
 	int		arg;
 
-	if (!shell || !shell->envp || !shell->ast || !shell->ast->args[1])
-		return ;
+	if (!args || !envp || !args[1])
+		return (1);
 	arg = 1;
-	while (shell->ast->args[arg])
+	while (args[arg])
 	{
-		name = shell->ast->args[arg];
+		name = args[arg];
 		i = 0;
-		while (shell->envp[i])
+		while (envp[i])
 		{
-			if (unset_util(shell->envp, name, i) == 0)
+			if (unset_util(envp, name, i) == 0)
 				break ;
 			i++;
 		}
 		arg++;
 	}
+	return (0);
 }

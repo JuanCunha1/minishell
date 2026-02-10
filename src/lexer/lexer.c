@@ -10,60 +10,53 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "lexer.h"
 
-void	free_array(char **arr, int size)
+t_lexer init_lexer(const char *input, char **env, int exit_status)
 {
-	int	i;
+	t_lexer lx;
 
-	i = 0;
-	if (!arr)
-		return ;
-	if (size == 0)
-		while (arr[i])
-			free(arr[i++]);
-	else
-		while (i < size)
-		{
-			if (arr[i])
-				free(arr[i]);
-			i++;
-		}
-	free(arr);
+	lx.input = input;
+	lx.i = 0;
+	lx.state = LX_NORMAL;
+	lx.tokens = NULL;
+	lx.env = envp_dup(env);
+	lx.buffer = malloc(ft_strlen(input) + 1);
+	if (!lx.buffer)
+        lx.state = LX_ERROR;
+	lx.buf_len = 0;
+	lx.last_exit_status = exit_status;
+	return (lx);
 }
 
-int	is_redir(char *str, t_flags *flags)
+int	lexer_error(t_lexer *lx)
 {
-	if (flags->flag_double_quot)
-		return (T_STRING);
-	else if (str[0] == '<')
-		return (T_REDIR_IN);
-	else if (str[0] == '>' && str[1] == '>')
-		return (T_REDIR_APPEND);
-	else if (str[0] == '>')
-		return (T_REDIR_OUT);
-	return (T_STRING);
-}
-
-int	getype(char *str, t_flags *flags)
-{
-	if (is_simple_quoted(str, flags) && !flags->flag_double_quot)
-		return (T_SIMPLE_QUOTED);
-	else if (is_double_quoted(str, flags) && !flags->flag_simple_quot)
-		return (T_DOUBLE_QUOTED);
-	else if (is_pipe(str, flags))
-		return (T_PIPE);
-	else if (is_heredoc(str, flags))
-		return (T_HEREDOC);
-	else if (is_or_operator(str, flags))
-		return (T_FLOW_OPERATOR);
-	return (is_redir(str, flags));
-}
-
-/*Lexer se encarga de tokenizar, categorizar y mirar la sintaxys este bien escrita.*/
-int	lexer(t_shell *sh)
-{
-	init_list(&sh->tokens, sh->str, &sh->flags);
-	//print_list(l_tokens);
+	if (lx->state != LX_IN_SQUOTE && lx->state != LX_IN_DQUOTE)
+		return (1);
+	if (lx->state == LX_IN_SQUOTE)
+		ft_putendl_fd("bash: unclosed quotes '", 2);
+	else if (lx->state == LX_IN_DQUOTE)
+		ft_putendl_fd("bash: unclosed quotes \"", 2);
+	lx->last_exit_status = 2;
+	free(lx->buffer);
+	free_tokens(lx->tokens);
+	free_string_array(lx->env);
 	return (0);
+}
+
+t_token *lexer(const char *input, char **env, int exit_status)
+{
+	t_lexer lx;
+
+	lx = init_lexer(input, env, exit_status);
+	if (lx.state  == LX_ERROR)
+		return (NULL);
+	while (input[lx.i])
+		lx = states_loop(lx, input);
+	if (lexer_error(&lx) == 0)
+		return (NULL);
+	emit_word(&lx);
+	free(lx.buffer);
+	free_string_array(lx.env);
+	return (lx.tokens);
 }

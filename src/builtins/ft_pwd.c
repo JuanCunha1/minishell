@@ -12,34 +12,32 @@
 
 #include "minishell.h"
 
-int	pwd_error(t_shell *sh)
+int	pwd_error(char **args)
 {
-	if (sh->ast->args[1] && sh->ast->args[1][0] == '-'
-		&& sh->ast->args[1][1])
+	if (args[1] && args[1][0] == '-'
+		&& args[1][1])
 	{
-		printf("bash: pwd: %s: bad option\n", sh->ast->args[1]);
+		printf("bash: pwd: %s: bad option\n", args[1]);
 		printf("pwd: usage: pwd\n");
-		sh->exit_status = 2;
-		return (-1);
+		return (2);
 	}
 	return (0);
 }
 
-void	ft_pwd(t_shell *shell)
+int	ft_pwd(char **args)
 {
 	char	*pwd;
 
-	shell->exit_status = 0;
-	if (pwd_error(shell) == -1)
-		return ;
+	if (pwd_error(args) == 2)
+		return (2);
 	pwd = getcwd(NULL, 0);
 	if (!pwd)
 	{
 		perror("pwd");
-		shell->exit_status = 1;
-		return ;
+		return (1);
 	}
 	ft_putendl_fd(pwd, 1);
 	free(pwd);
 	pwd = NULL;
+	return (0);
 }

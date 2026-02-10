@@ -33,10 +33,9 @@ int	shell_loop(t_shell *sh)
 		return (1);
 	}
 	add_history(sh->str);
-	if (lexer(sh) == -1)
-		return (1);
-	else if (parser(sh) == 1)
-		execute_ast(sh->ast, sh);
+	sh->tokens = lexer(sh->str, sh->envp, sh->exit_status);
+	if (parser(sh) == 1)
+		sh->exit_status = execute_ast(sh->ast, sh->envp, 0);
 	g_signal = 0;
 	return (1);
 }

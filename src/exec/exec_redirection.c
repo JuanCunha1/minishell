@@ -12,64 +12,38 @@
 
 #include "minishell.h"
 
-static int	redirect_fd(int fd, int target)
-{
-	if (dup2(fd, target) < 0)
-	{
-		perror("dup2");
-		close(fd);
-		return (-1);
-	}
-	close(fd);
-	return (0);
-}
-
-static int	open_redir_file(t_ast *node)
+static int	open_redir_file(t_redir *redir)
 {
 	int	fd;
 
 	fd = -1;
-	if (node->type == T_REDIR_IN)
-		fd = open(node->file, O_RDONLY);
-	else if (node->type == T_REDIR_OUT)
-		fd = open(node->file, O_WRONLY | O_CREAT | O_TRUNC, 0666);
-	else if (node->type == T_REDIR_APPEND)
-		fd = open(node->file, O_WRONLY | O_CREAT | O_APPEND, 0666);
+	if (redir->type == T_REDIR_IN)
+		fd = open(redir->file, O_RDONLY);
+	else if (redir->type == T_REDIR_OUT)
+		fd = open(redir->file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	else if (redir->type == T_REDIR_APPEND)
+		fd = open(redir->file, O_WRONLY | O_CREAT | O_APPEND, 0644);
 	if (fd < 0)
-		perror(node->file);
+	{
+		perror(redir->file);
+		exit(1);
+	}
 	return (fd);
 }
 
-int	apply_redirections(t_ast *redir)
+int	apply_redirections(t_redir *redir)
 {
 	int	fd;
 
-	while (redir && redir->type >= T_REDIR_OUT && redir->type <= T_HEREDOC)
+	while (redir)
 	{
 		fd = open_redir_file(redir);
-		if (fd < 0)
-			return (-1);
-		if (redir->type == T_REDIR_IN || redir->type == T_HEREDOC)
-		{
-			if (redirect_fd(fd, STDIN_FILENO) < 0)
-				return (-1);
-		}
-		else
-		{
-			if (redirect_fd(fd, STDOUT_FILENO) < 0)
-				return (-1);
-		}
-		redir = redir->left;
+		if (redir->type == T_REDIR_IN)
+            dup2(fd, STDIN_FILENO);
+        else
+            dup2(fd, STDOUT_FILENO);
+        close(fd);
+        redir = redir->next;
 	}
 	return (0);
-}
-
-void	execute_redirection(t_ast *node, t_shell *sh)
-{
-	if (!node)
-		return ;
-	if (apply_redirections(node) == -1)
-		exit(1);
-	execute_ast(node->left, sh);
-	exit(sh->exit_status);
 }

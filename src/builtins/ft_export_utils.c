@@ -12,27 +12,27 @@ static int	env_length(char **env)
 	return (i);
 }
 
-static void	append_env_var(t_shell *shell, char *arg)
+static void	append_env_var(char **envp, char *arg)
 {
 	int		len;
 	char	**tmp;
 
-	len = env_length(shell->envp);
-	tmp = (char **)realloc(shell->envp, sizeof(char *) * (len + 2));
+	len = env_length(envp);
+	tmp = (char **)realloc(envp, sizeof(char *) * (len + 2));
 	if (!tmp)
 	{
 		perror("realloc failed");
 		return ;
 	}
-	shell->envp = tmp;
-	shell->envp[len] = ft_strdup(arg);
-	if (!shell->envp[len])
+	envp = tmp;
+	envp[len] = ft_strdup(arg);
+	if (!envp[len])
 	{
 		perror("strdup failed");
-		shell->envp[len] = NULL;
+		envp[len] = NULL;
 		return ;
 	}
-	shell->envp[len + 1] = NULL;
+	envp[len + 1] = NULL;
 }
 
 static int	get_env_index(char **envp, char *name)
@@ -68,7 +68,7 @@ static int	is_valid_env_name(char *s)
 	return (1);
 }
 
-void	handle_export_arg(t_shell *shell, char *name, int has_equal, char *arg)
+void	handle_export_arg(char **envp, char *name, int has_equal, char *arg)
 {
 	int	idx;
 
@@ -78,20 +78,20 @@ void	handle_export_arg(t_shell *shell, char *name, int has_equal, char *arg)
 		ft_putendl_fd(name, 2);
 		return ;
 	}
-	idx = get_env_index(shell->envp, name);
+	idx = get_env_index(envp, name);
 	if (!has_equal)
 		return ;
 	if (idx != -1)
 	{
-		free(shell->envp[idx]);
+		free(envp[idx]);
 		if (has_equal)
-			shell->envp[idx] = ft_strdup(arg);
+			envp[idx] = ft_strdup(arg);
 		else
-			shell->envp[idx] = ft_strdup(shell->envp[idx]);
-		if (!shell->envp[idx])
+			envp[idx] = ft_strdup(envp[idx]);
+		if (!envp[idx])
 			perror("strdup failed");
 		return ;
 	}
 	else
-		append_env_var(shell, arg);
+		append_env_var(envp, arg);
 }

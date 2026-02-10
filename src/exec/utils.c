@@ -12,8 +12,8 @@
 
 #include "minishell.h"
 
-void	fatal(const char *msg)
+void	fatal(const char *msg, int exit_code)
 {
 	perror(msg);
-	exit(1);
+	exit(exit_code);
 }

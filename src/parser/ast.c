@@ -15,7 +15,7 @@
 /*
  * fill the array with the values of the input
  */
-static int	fill_array(t_token *token, t_ast *ast)
+ int	fill_array(t_token *token, t_ast *ast)
 {
 	t_token	*buf;
 	int		i;
@@ -43,7 +43,7 @@ static int	fill_array(t_token *token, t_ast *ast)
 
 /*
  * create a new array of string to put the value
- */
+ 
 static int	allocate_array(t_token *token, t_ast *ast)
 {
 	int		count;
@@ -69,21 +69,42 @@ static int	allocate_array(t_token *token, t_ast *ast)
 		return (-1);
 	}
 	return (0);
-}
+}*/
 
+int	ft_heredoc(t_token *token, t_ast *ast)
+{
+	if (!token || !ast)
+		return (-1);
+	if (token->type_tok != T_HEREDOC)
+		return (0);
+	if (!token->next || !token->next->data)
+		return (-1);
+	ast->heredocs = malloc(sizeof(t_heredoc));
+	if	(!ast->heredocs)	
+		return (-1);
+	ast->heredocs->delimiter = ft_strdup(token->next->data);
+	if (!ast->heredocs->delimiter)
+	{
+		free(ast->heredocs);
+		ast->heredocs = NULL;
+		return (-1);
+	}
+	ast->heredocs->expand = !token->next->quoted;
+	ast->heredocs->fd = -1;
+	return (1);
+}
 /*
- * check what type of return received
- * ret = 0 nothing is created
- * ret = 1 created
- * ret = -1 error
- */
 int	create_ast(t_token *token, t_ast *ast)
 {
 	if (!token || !ast)
+		return (-1);
+	int hd_status = ft_heredoc(token, ast);
+	if (hd_status == -1) // Erro real de malloc
 		return (-1);
 	if (parse_pipe(&token, ast))
 		return (1);
 	if (redirection(&token, ast))
 		return (1);
 	return (allocate_array(token, ast));
-}
+}*/
+

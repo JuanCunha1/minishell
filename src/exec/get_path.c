@@ -68,11 +68,7 @@ static char	*find_executable(char *cmd, char **paths)
 	char	*candidate;
 	int		i;
 
-	if (!cmd)
-		return (NULL);
-	if (access(cmd, X_OK) == 0)
-		return (ft_strdup(cmd));
-	if (!paths)
+	if (!cmd || !paths)
 		return (NULL);
 	i = 0;
 	while (paths[i])

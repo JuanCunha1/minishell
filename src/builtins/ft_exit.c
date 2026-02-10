@@ -32,41 +32,33 @@ static int	is_numeric(char *s)
 	return (1);
 }
 
-static void	exit_error(t_shell *shell)
+static void	exit_check(char **args)
 {
 	char	*str;
 
-	str = shell->ast->args[1];
+	str = args[1];
 	if (!is_numeric(str))
 	{
 		printf("exit\n");
 		printf("bash: exit: %s: numeric argument required\n", str);
-		free_string_array(shell->envp);
-		free_shell(shell);
-		shell->exit_status = 2;
-		exit(shell->exit_status);
+		exit(2);
 	}
-	if (shell->ast->args[2])
+	if (args[2])
 	{
-		printf("exit: too many arguments\n");
-		shell->exit_status = 1;
+		printf("bash: exit: too many arguments\n");
 		return ;
 	}
-	shell->exit_status = (unsigned char)ft_atoi(str);
 	printf("exit\n");
-	free_string_array(shell->envp);
-	free_shell(shell);
-	exit(shell->exit_status);
+	exit(ft_atoi(str));
 }
 
-void	ft_exit(t_shell *shell)
+int	ft_exit(char **args)
 {
-	if (!shell->ast || !shell->ast->args[1])
+	if (args[1])
 	{
-		free_string_array(shell->envp);
-		free_shell(shell);
 		printf("exit\n");
-		exit(shell->exit_status);
+		exit(0);
 	}
-	exit_error(shell);
+	exit_check(args);
+	return (1);
 }

@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-void	ft_echo(char *args[], t_shell *shell)
+int	ft_echo(char **args)
 {
 	int	i;
 	int	j;
@@ -34,5 +34,5 @@ void	ft_echo(char *args[], t_shell *shell)
 	}
 	if (!(args[1] && !ft_strncmp(args[1], "-n", 3)))
 		ft_putchar_fd(10, 1);
-	shell->exit_status = 0;
+	return (0);
 }

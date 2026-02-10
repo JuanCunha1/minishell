@@ -38,6 +38,7 @@
 # define COLOR_MAGENTA "\x1b[35m"
 # define COLOR_CYAN    "\x1b[36m"
 # define COLOR_WHITE   "\x1b[37m"
+# define INITIAL_PID_CAPACITY 10
 
 # define MINISHELL_BANNER COLOR_GOLD "\n\
                  \\__|          \\__| $$$$$$\\  $$ |                $$ |$$ |\n\
@@ -55,17 +56,7 @@
  * EVITAR TENER MUCHOS IF COMPARANDO QUE ES.
  * FUNCION EN PROGRESO.
  * */
-/*
-typedef enum e_node_type
-{
-	CMD,
-	PIPE,
-	REDIR_OUT,
-	REDIR_IN,
-	REDIR_APPEND,
-	HEREDOC
-}	t_node_type;
-*/
+
 typedef enum e_type
 {
 	T_STRING, /*---0---*/
@@ -81,26 +72,36 @@ typedef enum e_type
 	T_HEREDOC
 }	t_type;
 
-typedef struct s_flags
-{
-	int			flag_simple_quot;
-	int			flag_double_quot;
-	int			flag_heredoc;
-}				t_flags;
-
 /*ESTA ES LA STRUCT PARA GUARDAR LOS TOKENS*/
 typedef struct s_token
 {
 	char			*data;
 	t_type			type_tok;
+	int				quoted;
 	struct s_token	*next;
 }	t_token;
+
+typedef struct s_heredoc
+{
+    char				*delimiter;
+    int					expand;
+    int					fd;
+	struct s_heredoc	*next;
+}   t_heredoc;
+
+typedef struct s_redir
+{
+    t_type			type;
+    char            *file;
+    struct s_redir  *next;
+}	t_redir;
 
 typedef struct s_ast
 {
 	t_type			type;
 	char			**args;
-	char			*file;
+	t_redir         *redirs;
+	t_heredoc		*heredocs;
 	struct s_ast	*left;
 	struct s_ast	*right;
 }	t_ast;
@@ -108,25 +109,21 @@ typedef struct s_ast
 /*STRUCT BASE, TIPICA STRUCT PARA PASAR VARIABLES GENERALES*/
 typedef struct s_shell
 {
-	char	*str;
-	char	**envp;
-	int		exit_status; //probable futuro manejo de exit
-	t_token	*tokens;
-	t_ast	*ast;
-	t_flags	flags;
-	int		in_pipeline;
+	char		*str;
+	char		**envp;
+	int			exit_status; //probable futuro manejo de exit
+	t_token		*tokens;
+	t_ast		*ast;
+	int			in_pipeline;
 }	t_shell;
 
 typedef struct s_pipe
 {
-	t_ast	*node;
-	t_shell	*sh;
-	int		input_fd;
-	int		pipe_fd[2];
-	pid_t	pid;
-	pid_t	*pids;
-	size_t	count;
-	size_t	capacity;
+	t_ast			*node;
+	int				input_fd;
+	int				pipe_fd[2];
+	pid_t			pid;
+	struct s_pipe	*next;
 }	t_pipe;
 
 /*----FUNCTIONS----*/
@@ -134,43 +131,29 @@ typedef struct s_pipe
 void	free2d(char **arr);
 char	**envp_dup(char **ae);
 void	clear_and_leave(t_shell *base, char **args);
+char	*ft_strndup(const char *s, size_t n);
 
-/*Tokenizer & Parser*/
-int		is_heredoc(char *str, t_flags *flags);
-int		lexer(t_shell *sh);
+t_token *lexer(const char *input, char **env, int exit_status);
 
-char	**ft_split(char const *s, char c);
-char	*asignar_palabra(const char *s, int len);
-void	print_list(t_token **l_tokens);
-void	init_list(t_token **tokens, char *str, t_flags *flags);
-int		ft_count_word(char const *s, char c);
-int		contador_letras_comis(char const *s, char c);
-int		getype(char *str, t_flags *flags);
-int		is_simple_quoted(char *str, t_flags *flags);
-int		is_double_quoted(char *str, t_flags *flags);
-int		is_pipe(char *str, t_flags *flags);
-int		is_or_operator(char *str, t_flags *flags);
-void	init_flags(t_flags *flags);
-void	init_base(char **ae, t_shell *base);
 
 /*Parser*/
 int		parser(t_shell *sh);
 int		create_ast(t_token *token, t_ast *ast);
-int		redirection(t_token **token, t_ast *ast);
-int		parse_pipe(t_token **token, t_ast *ast);
-//void	init_ast(t_ast *ast);
+//int		redirection(t_token **token, t_ast *ast);
+//int		parse_pipe(t_token **token, t_ast *ast);
+
 
 /* execute*/
-void	execute_ast(t_ast *ast, t_shell *sh);
+//void	execute_ast(t_ast *ast, t_shell *sh);
 void	ft_free_tab(char **tab);
 char	*get_path(char *cmd, char **env);
 void	exec_node(t_ast *node, t_shell *sh);
-void	execute_pipe(t_ast *node, t_shell *sh);
+//void	execute_pipe(t_ast *node, t_shell *sh);
 int		execute_pipe_recursive(t_ast *node, t_shell *sh, int input_fd);
 void	exec_node_no_fork(t_ast *node, t_shell *sh);
 void	free_ast(t_ast *node);
-void	fatal(const char *msg);
-void	execute_redirection(t_ast *node, t_shell *sh);
+void	fatal(const char *msg, int exit_code);
+//void	execute_redirection(t_ast *node, t_shell *sh);
 t_pipe	init_pipe(t_ast *node, t_shell *sh);
 
 void	free_tokens(t_token *token);
@@ -184,26 +167,46 @@ void	set_signals_child(void);
 /* Builtins*/
 
 int		is_builtin(char *str);
-void	builtin(t_ast *ast, t_shell *sh, char *str);
+int		builtin(char **args, char **envp);
 
-void	ft_cd(t_ast *ast, t_shell *shell);
+int		ft_cd(char **args, char **envp);
 
-void	ft_echo(char *args[], t_shell *shell);
+int		ft_echo(char **args);
 
-void	ft_pwd(t_shell *shell);
+int		ft_pwd(char **args);
 
-void	ft_exit(t_shell *shell);
+int		ft_exit(char **args);
 
-void	ft_unset(t_shell *shell);
+int		ft_unset(char **args, char **envp);
 
-void	ft_export(t_shell *sh);
-void	handle_export_arg(t_shell *shell, char *name, int has_equal, char *arg);
+int		ft_export(char **args, char **envp);
+void	handle_export_arg(char **envp, char *name, int has_equal, char *arg);
 
-void	ft_env(t_shell *sh);
+int		ft_env(char **args, char **envp);
 
+char	*get_env_value(const char *var, char **env);
 
 t_shell	init_shell(char **envp);
 t_pipe	init_pipe(t_ast *node, t_shell *sh);
 t_ast	*init_ast(void);
 void	free_string_array(char **str);
+
+int process_heredocs(t_ast *ast, t_shell *sh);
+int read_heredoc(t_heredoc *hd, t_shell *sh);
+
+t_ast *parse_pipe(t_token **tokens);
+char **parse_command(t_token **tokens);
+void add_redir(t_redir **list, t_redir *new_redir);
+t_redir	*create_redir(char *op, char *file);
+int	is_redirection(t_type type);
+t_ast *parse_redirection(t_token **token);
+int execute_ast(t_ast *node, char **envp, int in_pipeline);
+void	execute_redirection(t_ast *node, char **envp);
+int		execute_pipe(t_ast *node, char **envp);
+int		apply_redirections(t_redir *redir);
+int		execute_cmd(t_ast *node, char **envp, int in_pipe);
+
+void set_signals_prompt(void);
+void sigint_handler(int sig);
+int 	execute_pipe_list(t_pipe *head, char **envp);
 #endif

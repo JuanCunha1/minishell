@@ -53,24 +53,22 @@ static char	*get_name(char *arg, int *has_equal)
 	return (name);
 }
 
-void	ft_export(t_shell *shell)
+int	ft_export(char **args, char **envp)
 {
 	int		i;
 	char	*name;
 	int		has_equal;
-	char	**args;
 
-	if (!shell || !shell->envp || !shell->ast
-		|| !shell->ast->args || !shell->ast->args[1])
-		return ;
+	if (!args || !envp || !args[1])
+		return (1);
 	i = 0;
-	args = shell->ast->args;
 	while (args[++i])
 	{
 		name = get_name(args[i], &has_equal);
 		if (!name)
 			continue ;
-		handle_export_arg(shell, name, has_equal, args[i]);
+		handle_export_arg(envp, name, has_equal, args[i]);
 		free(name);
 	}
+	return (0);
 }

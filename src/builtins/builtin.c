@@ -33,20 +33,21 @@ int	is_builtin(char *str)
 	return (0);
 }
 
-void	builtin(t_ast *ast, t_shell *sh, char *str)
+int	builtin(char **args, char **envp)
 {
-	if (ft_strncmp(str, "cd", 3) == 0)
-		ft_cd(ast, sh);
-	if (ft_strncmp(str, "echo", 5) == 0)
-		ft_echo(ast->args, sh);
-	if (ft_strncmp(str, "pwd", 4) == 0)
-		ft_pwd(sh);
-	if (ft_strncmp(str, "exit", 5) == 0)
-		ft_exit(sh);
-	if (ft_strncmp(str, "unset", 6) == 0)
-		ft_unset(sh);
-	if (ft_strncmp(str, "export", 7) == 0)
-		ft_export(sh);
-	if (ft_strncmp(str, "env", 4) == 0)
-		ft_env(sh);
+	if (ft_strncmp(args[0], "cd", 3) == 0)
+		return (ft_cd(args, envp));
+	else if (ft_strncmp(args[0], "echo", 5) == 0)
+		return (ft_echo(args));
+	else if (ft_strncmp(args[0], "pwd", 4) == 0)
+		return (ft_pwd(args));
+	else if (ft_strncmp(args[0], "exit", 5) == 0)
+		return (ft_exit(args));
+	else if (ft_strncmp(args[0], "unset", 6) == 0)
+		return (ft_unset(args, envp));
+	else if (ft_strncmp(args[0], "export", 7) == 0)
+		return (ft_export(args, envp));
+	else if (ft_strncmp(args[0], "env", 4) == 0)
+		return (ft_env(args, envp));
+	return (1);
 }

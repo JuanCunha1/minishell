@@ -1,5 +1,31 @@
 #include "minishell.h"
 
+void free_heredocs(t_heredoc *heredoc)
+{
+    t_heredoc *tmp;
+
+    while (heredoc)
+    {
+        tmp = heredoc->next;
+        free(heredoc->delimiter);
+        free(heredoc);
+        heredoc = tmp;
+    }
+}
+
+void free_redirs(t_redir *redir)
+{
+    t_redir *tmp;
+
+    while (redir)
+    {
+        tmp = redir->next;
+        free(redir->file);
+        free(redir);
+        redir = tmp;
+    }
+}
+
 void	free_ast(t_ast *node)
 {
 	int	i;
@@ -16,8 +42,11 @@ void	free_ast(t_ast *node)
 		free(node->args);
 		node->args = NULL;
 	}
-	free(node->file);
-	node->file = NULL;
+	
+	free_redirs(node->redirs);
+	//free_heredocs(node->heredocs);
+	node->redirs = NULL;
+	//node->heredocs = NULL;
 	free(node);
 }
 
@@ -37,9 +66,10 @@ void	free_shell(t_shell *sh)
 	}
 	if (sh->ast)
 	{
+		
 		free_ast(sh->ast);
 		sh->ast = NULL;
-	}
+	}	
 }
 
 void	free_tokens(t_token *token)
