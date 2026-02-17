@@ -1,9 +1,21 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   expand_var.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jmarques <jmarques@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/02/17 10:49:13 by jmarques          #+#    #+#             */
+/*   Updated: 2026/02/17 10:49:15 by jmarques         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include <lexer.h>
 
-static int get_var_name_len(const char *s)
+static int	get_var_name_len(const char *s)
 {
 	int	i;
-	
+
 	i = 0;
 	if (s[i] == '?')
 		return (1);
@@ -22,28 +34,28 @@ int	handle_dollar_sign(t_lexer *lx, const char *input)
 	char	*num_buf;
 	int		i;
 
-    if (input[lx->i + 1] == '\0')
-    {
-        buf_add(lx, '$');
-        lx->i++;
-        return (0);
-    }
-    if (input[lx->i + 1] == '?')
-    {
+	if (input[lx->i + 1] == '\0')
+	{
+		buf_add(lx, '$');
+		lx->i++;
+		return (0);
+	}
+	if (input[lx->i + 1] == '?')
+	{
 		num_buf = ft_itoa(lx->last_exit_status);
 		if (!num_buf)
 			return (-1);
-        i = 0;
-        while (num_buf[i])
+		i = 0;
+		while (num_buf[i])
 			buf_add(lx, num_buf[i++]);
 		lx->i += 1;
 		free(num_buf);
-        return (0);
-    }
+		return (0);
+	}
 	return (1);
 }
 
-void buf_add_var(t_lexer *lx, const char *input)
+void	buf_add_var(t_lexer *lx, const char *input)
 {
 	int		var_len;
 	char	*var_name;
@@ -57,7 +69,7 @@ void buf_add_var(t_lexer *lx, const char *input)
 	{
 		buf_add(lx, '$');
 		lx->i++;
-		return;
+		return ;
 	}
 	var_name = ft_strndup(input + lx->i + 1, var_len);
 	value = get_env_value(var_name, lx->env);
@@ -67,7 +79,7 @@ void buf_add_var(t_lexer *lx, const char *input)
 		while (value[i])
 			buf_add(lx, value[i++]);
 		free(value);
-    }	
+	}
 	free(var_name);
 	lx->i += var_len;
 }

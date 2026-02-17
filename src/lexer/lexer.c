@@ -12,9 +12,9 @@
 
 #include "lexer.h"
 
-t_lexer init_lexer(const char *input, char **env, int exit_status)
+t_lexer	init_lexer(const char *input, char **env, int exit_status)
 {
-	t_lexer lx;
+	t_lexer	lx;
 
 	lx.input = input;
 	lx.i = 0;
@@ -24,7 +24,7 @@ t_lexer init_lexer(const char *input, char **env, int exit_status)
 	lx.buf_cap = 32;
 	lx.buffer = malloc(lx.buf_cap);
 	if (!lx.buffer)
-        lx.state = LX_ERROR;
+		lx.state = LX_ERROR;
 	lx.buf_len = 0;
 	lx.last_exit_status = exit_status;
 	return (lx);
@@ -45,12 +45,12 @@ int	lexer_error(t_lexer *lx)
 	return (0);
 }
 
-t_token *lexer(const char *input, char **env, int exit_status)
+t_token	*lexer(const char *input, char **env, int exit_status)
 {
-	t_lexer lx;
+	t_lexer	lx;
 
 	lx = init_lexer(input, env, exit_status);
-	if (lx.state  == LX_ERROR)
+	if (lx.state == LX_ERROR)
 		return (NULL);
 	while (input[lx.i])
 		lx = states_loop(lx, input);

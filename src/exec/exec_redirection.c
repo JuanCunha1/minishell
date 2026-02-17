@@ -51,9 +51,9 @@ int	apply_redirections(t_redir *redir)
 		if (redir->type == T_REDIR_IN)
 			redirect_dup(fd, STDIN_FILENO);
 		else
-        	redirect_dup(fd, STDOUT_FILENO);
-        close(fd);
-        redir = redir->next;
+			redirect_dup(fd, STDOUT_FILENO);
+		close(fd);
+		redir = redir->next;
 	}
 	return (0);
 }

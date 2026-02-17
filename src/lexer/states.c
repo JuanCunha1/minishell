@@ -1,15 +1,26 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   states.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jmarques <jmarques@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/02/17 10:54:18 by jmarques          #+#    #+#             */
+/*   Updated: 2026/02/17 10:54:22 by jmarques         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include <lexer.h>
 
 static void	emit_operator(t_lexer *lx, int len)
 {
-    t_token	*tok;
+	t_token	*tok;
 
-    emit_word(lx);
-    tok = create_token(ft_substr(lx->input, lx->i, len),
-                       get_operator_type(lx->input + lx->i));
-    adding_token(&lx->tokens, tok);
-    lx->i += len - 1;
+	emit_word(lx);
+	tok = create_token(ft_substr(lx->input, lx->i, len),
+			get_operator_type(lx->input + lx->i));
+	adding_token(&lx->tokens, tok);
+	lx->i += len - 1;
 }
 
 static t_lexer	normal_state(t_lexer lx, const char *input, char c)
@@ -24,7 +35,7 @@ static t_lexer	normal_state(t_lexer lx, const char *input, char c)
 	else if (c == '\\' && input[lx.i + 1])
 	{
 		lx.i++;
-        buf_add(&lx, input[lx.i]);
+		buf_add(&lx, input[lx.i]);
 	}
 	else if (len)
 		emit_operator(&lx, len);
