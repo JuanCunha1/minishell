@@ -12,6 +12,20 @@
 
 #include "minishell.h"
 
+int	redirect_fd(int fd, int target)
+{
+	if (fd != target)
+	{
+		if (dup2(fd, target) < 0)
+		{
+			perror("dup2");
+			return (-1);
+		}
+		close(fd);
+	}
+	return (0);
+}
+
 static int	open_redir_file(t_redir *redir)
 {
 	int	fd;
@@ -31,28 +45,24 @@ static int	open_redir_file(t_redir *redir)
 	return (fd);
 }
 
-static void	redirect_dup(int fd, int target)
-{
-	if (dup2(fd, target) < 0)
-	{
-		perror("dup2");
-		close(fd);
-		exit(1);
-	}
-}
-
 int	apply_redirections(t_redir *redir)
 {
 	int	fd;
+	int	target;
 
 	while (redir)
 	{
 		fd = open_redir_file(redir);
 		if (redir->type == T_REDIR_IN)
-			redirect_dup(fd, STDIN_FILENO);
+			target = STDIN_FILENO;
 		else
-			redirect_dup(fd, STDOUT_FILENO);
-		close(fd);
+			target = STDOUT_FILENO;
+		if (redirect_fd(fd, target) < 0)
+		{
+			if (fd != target)
+				close(fd);
+			return (1);
+		}
 		redir = redir->next;
 	}
 	return (0);

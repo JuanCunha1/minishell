@@ -25,24 +25,25 @@ void free_redirs(t_redir *redir)
         redir = tmp;
     }
 }
-void	*free_pipe_list(t_pipe *head)
+
+void	free_pipe_list(t_pipe *head)
 {
 	t_pipe *tmp;
 
 	while (head)
 	{
-		tmp = head->next;
-		if (head->input_fd != -1 && head->input_fd != STDIN_FILENO)
+		if (head->input_fd > 2)
 			close(head->input_fd);
-		if (head->pipe_fd[0] != -1)
+		if (head->pipe_fd[0] > 2)
 			close(head->pipe_fd[0]);
-		if (head->pipe_fd[1] != -1)
+		if (head->pipe_fd[1] > 2)
 			close(head->pipe_fd[1]);
+		tmp = head->next;
 		free(head);
 		head = tmp;
 	}
-	return (NULL);
 }
+
 void	free_ast(t_ast *node)
 {
 	int	i;

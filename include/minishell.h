@@ -195,7 +195,6 @@ int		execute_cmd(t_ast *node, char ***envp, int in_pipe);
 
 void	set_signals_prompt(void);
 void	sigint_handler(int sig);
-int		execute_pipe_list(t_pipe *head, char ***envp);
 t_ast	*parse_command_segment(t_token **token);
 void	execute(t_ast *node, char ***envp);
 t_pipe	*build_pipe_list(t_ast *ast);
@@ -203,4 +202,7 @@ int		check_tokens(t_token *token);
 int		is_operator(t_type type);
 char	**parse_args(t_token **token);
 int		env_length(char **env);
+int		redirect_fd(int fd, int target);
+void	free_pipe_list(t_pipe *head);
+int		return_status(pid_t pid);
 #endif

@@ -11,7 +11,7 @@ NAME = minishell
 SRCS_DIR = src
 OBJS_DIR = objs
 INCLUDES_DIR = include
-DIRS := $(shell find $(SRCS_DIR) -type d | sed "s/$(SRCS_DIR)/$(OBJS_DIR)/")
+DIRS := $(shell find $(SRCS_DIR) -type d | sed "s|^$(SRCS_DIR)|$(OBJS_DIR)|")
 
 # Includes
 INCLUDES_FLAG = -I$(INCLUDES_DIR) -Ilibft/
@@ -38,7 +38,6 @@ PARSER_SRCS = \
 # Lexer sources
 LEXER_SRCS = \
 		$(SRCS_DIR)/lexer/lexer.c \
-		$(SRCS_DIR)/lexer/utils.c \
 		$(SRCS_DIR)/lexer/tokenizer.c \
 		$(SRCS_DIR)/lexer/quotes.c \
 		$(SRCS_DIR)/lexer/states.c \
@@ -90,13 +89,11 @@ SRCS =	$(MAIN) \
 # Object files
 OBJS = $(SRCS:$(SRCS_DIR)/%.c=$(OBJS_DIR)/%.o)
 
-
 # Colors
 GREEN  = \033[0;32m
 YELLOW = \033[0;33m
 RED    = \033[0;31m
 RESET  = \033[0m
-
 
 # ---------------------------------------------------------
 #                   COMPILATION RULES

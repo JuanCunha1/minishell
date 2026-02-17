@@ -74,7 +74,7 @@ static int	is_valid_identifier(char *s)
 	if (!s || (!ft_isalpha(s[0]) && s[0] != '_'))
 	{
 		ft_putstr_fd("minishell: export: `", 2);
-		ft_putstr_fd(arg, 2);
+		ft_putstr_fd(s, 2);
 		ft_putendl_fd("': not a valid identifier", 2);
 		return (0);
 	}
@@ -84,7 +84,7 @@ static int	is_valid_identifier(char *s)
 		if (!ft_isalnum(s[i]) && s[i] != '_')
 		{
 			ft_putstr_fd("minishell: export: `", 2);
-			ft_putstr_fd(arg, 2);
+			ft_putstr_fd(s, 2);
 			ft_putendl_fd("': not a valid identifier", 2);
 			return (0);
 		}
