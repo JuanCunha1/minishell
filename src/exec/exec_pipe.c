@@ -23,7 +23,8 @@ void	pipe_pid(t_pipe *p, char ***envp)
 		exit(1);
 	if (p->pipe_fd[0] != -1)
 		close(p->pipe_fd[0]);
-	execute(p->node, envp);
+	apply_redirections(p->node->redirs);
+	execute(p->node->args, envp);
 	exit(1);
 }
 

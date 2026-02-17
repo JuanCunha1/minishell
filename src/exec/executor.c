@@ -12,26 +12,24 @@
 
 #include "minishell.h"
 
-int	return_status(pid_t pid)
+static char	*resolve_path(char **args, char ***envp, int *alloc)
 {
-	int	status;
-	int	last_status;
-	int	sig;
+	char	*path;
 
-	last_status = 1;
-	waitpid(pid, &status, 0);
-	if (WIFEXITED(status))
-		last_status = WEXITSTATUS(status);
-	else if (WIFSIGNALED(status))
+	path = args[0];
+	*alloc = 0;
+	if (!ft_strchr(args[0], '/'))
 	{
-		sig = WTERMSIG(status);
-		if (sig == SIGINT)
-			write(1, "\n", 1);
-		else if (sig == SIGQUIT)
-			write(1, "Quit (core dumped)\n", 19);
-		last_status = 128 + sig;
+		path = get_path(args[0], *envp);
+		if (!path)
+		{
+			ft_putstr_fd(args[0], 2);
+			ft_putendl_fd(": command not found", 2);
+			exit(127);
+		}
+		*alloc = 1;
 	}
-	return (last_status);
+	return (path);
 }
 
 int	exec_builtin_parent(t_ast *node, char ***envp)
@@ -42,7 +40,8 @@ int	exec_builtin_parent(t_ast *node, char ***envp)
 
 	saved_stdin = dup(STDIN_FILENO);
 	saved_stdout = dup(STDOUT_FILENO);
-	apply_redirections(node->redirs);
+	if (apply_redirections(node->redirs))
+		return (1);
 	return_value = builtin(node->args, envp);
 	dup2(saved_stdin, STDIN_FILENO);
 	dup2(saved_stdout, STDOUT_FILENO);
@@ -51,24 +50,28 @@ int	exec_builtin_parent(t_ast *node, char ***envp)
 	return (return_value);
 }
 
-void	execute(t_ast *node, char ***envp)
+void	execute(char **args, char ***envp)
 {
 	char	*path;
+	int		err;
+	int		alloc;
 
-	apply_redirections(node->redirs);
-	if (is_builtin(node->args[0]))
-		exit(builtin(node->args, envp));
-	path = get_path(node->args[0], *envp);
-	if (!path)
-	{
-		ft_putstr_fd(node->args[0], 2);
-		ft_putendl_fd(": command not found", 2);
+	if (!args[0] || args[0][0] == '\0')
+		{
+			ft_putendl_fd(": command not found", 2);
+			exit(127);
+		}
+		if (is_builtin(args[0]))
+			exit(builtin(args, envp));
+		path = resolve_path(args, envp, &alloc);
+		execve(path, args, *envp);
+		err = errno;
+		perror(path);
+		if (alloc)
+			free(path);
+		if (err == EACCES || err == EISDIR)
+			exit(126);
 		exit(127);
-	}
-	execve(path, node->args, *envp);
-	perror(node->args[0]);
-	free(path);
-	exit(127);
 }
 
 int	execute_cmd(t_ast *node, char ***envp)
@@ -88,7 +91,8 @@ int	execute_cmd(t_ast *node, char ***envp)
 	if (pid == 0)
 	{
 		set_signals_child();
-		execute(node, envp);
+		apply_redirections(node->redirs);
+		execute(node->args, envp);
 		exit(127);
 	}
 	return (return_status(pid));

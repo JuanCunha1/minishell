@@ -31,7 +31,7 @@ void	emit_word(t_lexer *lx)
 {
 	t_token	*tok;
 
-	if (lx->buf_len == 0)
+	if (lx->buf_len == 0 && !lx->had_quotes)
 		return ;
 	buf_add(lx, '\0');
 	tok = create_token(ft_strdup(lx->buffer), T_STRING);

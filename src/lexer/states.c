@@ -55,7 +55,7 @@ static t_lexer	single_quote(t_lexer lx, char c, int quoted)
 		lx.state = LX_NORMAL;
 	else
 		buf_add(&lx, c);
-	//lx.tokens->quoted = quoted;
+	lx.had_quotes = quoted;
 	return (lx);
 }
 
@@ -74,7 +74,7 @@ static t_lexer	double_quote(t_lexer lx, char c, const char *input, int quoted)
 		buf_add_var(&lx, input);
 	else
 		buf_add(&lx, c);
-	//lx.tokens->quoted = quoted;
+	lx.had_quotes = quoted;
 	return (lx);
 }
 

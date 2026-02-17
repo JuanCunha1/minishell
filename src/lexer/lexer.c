@@ -18,6 +18,7 @@ t_lexer	init_lexer(const char *input, char **env, int exit_status)
 
 	lx.input = input;
 	lx.i = 0;
+	lx.had_quotes = 0;
 	lx.state = LX_NORMAL;
 	lx.tokens = NULL;
 	lx.env = envp_dup(env);

@@ -26,6 +26,7 @@
 # include <sys/types.h>
 # include <sys/stat.h>
 # include <fcntl.h>
+# include <errno.h>
 
 /* ─── COLORES DE TEXTO ────────────────────────────────*/
 # define COLOR_GOLD "\x1b[38;5;220m"
@@ -198,7 +199,7 @@ int		execute_cmd(t_ast *node, char ***envp);
 void	set_signals_prompt(void);
 void	sigint_handler(int sig);
 t_ast	*parse_command_segment(t_token **token);
-void	execute(t_ast *node, char ***envp);
+void	execute(char **args, char ***envp);
 t_pipe	*build_pipe_list(t_ast *ast);
 int		check_tokens(t_token *token);
 int		is_operator(t_type type);

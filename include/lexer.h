@@ -36,6 +36,7 @@ typedef struct s_lexer
 	t_token		*tokens;
 	char		**env;
 	size_t		buf_cap;
+	int			had_quotes;
 	int			last_exit_status;
 }	t_lexer;
 
