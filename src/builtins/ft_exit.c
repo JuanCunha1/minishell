@@ -32,7 +32,7 @@ static int	is_numeric(char *s)
 	return (1);
 }
 
-static void	exit_check(char **args)
+static int	exit_check(char **args)
 {
 	char	*str;
 
@@ -46,19 +46,21 @@ static void	exit_check(char **args)
 	if (args[2])
 	{
 		printf("bash: exit: too many arguments\n");
-		return ;
+		return (0);
 	}
 	printf("exit\n");
 	exit(ft_atoi(str));
+	return (1);
 }
 
 int	ft_exit(char **args)
 {
+	if (!exit_check(args))
+		return (2);
 	if (args[1])
 	{
 		printf("exit\n");
 		exit(0);
 	}
-	exit_check(args);
 	return (1);
 }

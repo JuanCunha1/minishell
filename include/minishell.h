@@ -166,22 +166,22 @@ void	set_signals_child(void);
 /* Builtins*/
 
 int		is_builtin(char *str);
-int		builtin(char **args, char **envp);
+int		builtin(char **args, char ***envp);
 
-int		ft_cd(char **args, char **envp);
+int		ft_cd(char **args, char ***envp);
 
 int		ft_echo(char **args);
 
-int		ft_pwd(char **args);
+int		ft_pwd(void);
 
 int		ft_exit(char **args);
 
-int		ft_unset(char **args, char **envp);
+int		ft_unset(char **args, char ***envp);
 
-int		ft_export(char **args, char **envp);
-void	handle_export_arg(char **envp, char *name, int has_equal, char *arg);
+int		ft_export(char **args, char ***envp);
+void	handle_export_arg(char ***envp, char *arg);
 
-int		ft_env(char **args, char **envp);
+int 	ft_env(char **args, char **envp);
 
 char	*get_env_value(const char *var, char **env);
 
@@ -199,19 +199,20 @@ void add_redir(t_redir **list, t_redir *new_redir);
 t_redir	*create_redir(char *op, char *file);
 int	is_redirection(t_type type);
 t_ast *parse_redirection(t_token **token);
-int execute_ast(t_ast *node, char **envp, int in_pipeline);
+int execute_ast(t_ast *node, char ***envp, int in_pipeline);
 void	execute_redirection(t_ast *node, char **envp);
-int		execute_pipe(t_ast *node, char **envp);
+int		execute_pipe(t_ast *node, char ***envp);
 int		apply_redirections(t_redir *redir);
-int		execute_cmd(t_ast *node, char **envp, int in_pipe);
+int		execute_cmd(t_ast *node, char ***envp, int in_pipe);
 
 void set_signals_prompt(void);
 void sigint_handler(int sig);
-int 	execute_pipe_list(t_pipe *head, char **envp);
+int 	execute_pipe_list(t_pipe *head, char ***envp);
 t_ast	*parse_command_segment(t_token **token);
-void	execute(t_ast *node, char **envp);
+void	execute(t_ast *node, char ***envp);
 t_pipe	*build_pipe_list(t_ast *ast);
 int		check_tokens(t_token *token);
 int	is_operator(t_type type);
 char	**parse_args(t_token **token);
+int env_length(char **env);
 #endif

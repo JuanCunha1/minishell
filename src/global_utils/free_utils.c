@@ -83,7 +83,6 @@ void	free_shell(t_shell *sh)
 	}
 	if (sh->ast)
 	{
-
 		free_ast(sh->ast);
 		sh->ast = NULL;
 	}

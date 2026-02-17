@@ -12,63 +12,92 @@
 
 #include "minishell.h"
 
-char	*ft_strndup(const char *s, size_t n)
+static void swap(char **a, char **b)
 {
-	size_t	i;
-	char	*dup;
+	char *tmp;
 
-	if (!s)
-		return (NULL);
-	dup = (char *)malloc(sizeof(char) * (n + 1));
-	if (!dup)
-		return (NULL);
+	tmp = *a;
+	*a = *b;
+	*b = tmp;
+}
+
+static void sort_env(char **env)
+{
+	int i;
+	int j;
+
 	i = 0;
-	while (i < n && s[i])
+	while (env[i])
 	{
-		dup[i] = s[i];
+		j = i + 1;
+		while (env[j])
+		{
+			if (ft_strncmp(env[i], env[j], ft_strlen(env[i]) + ft_strlen(env[j])) > 0)
+				swap(&env[i], &env[j]);
+			j++;
+		}
 		i++;
 	}
-	dup[i] = '\0';
-	return (dup);
 }
 
-static char	*get_name(char *arg, int *has_equal)
+static void print_export_line(char *var)
 {
-	char	*eq;
-	char	*name;
+	char *equal;
+	int name_len;
 
-	eq = ft_strchr(arg, '=');
-	if (eq)
+	equal = ft_strchr(var, '=');
+	if (!equal)
 	{
-		*has_equal = 1;
-		name = ft_strndup(arg, eq - arg);
+		printf("declare -x %s\n", var);
+		return ;
 	}
-	else
-	{
-		*has_equal = 0;
-		name = ft_strdup(arg);
-	}
-	if (!name)
-		perror("strdup failed");
-	return (name);
+	name_len = equal - var;
+	ft_putstr_fd("declare -x ", 1);
+	write(1, var, name_len);
+	ft_putstr_fd("=\"", 1);
+	ft_putstr_fd(equal + 1, 1);
+	ft_putendl_fd("\"", 1);
 }
 
-int	ft_export(char **args, char **envp)
+int	print_export_sorted(char ***envp)
 {
+	char	**copy;
+	int		len;
 	int		i;
-	char	*name;
-	int		has_equal;
 
-	if (!args || !envp || !args[1])
+	len = env_length(*envp);
+	copy = malloc(sizeof(char *) * (len + 1));
+	if (!copy)
 		return (1);
 	i = 0;
-	while (args[++i])
+	while (i < len)
 	{
-		name = get_name(args[i], &has_equal);
-		if (!name)
-			continue ;
-		handle_export_arg(envp, name, has_equal, args[i]);
-		free(name);
+		copy[i] = (*envp)[i];
+		i++;
+	}
+	copy[len] = NULL;
+	sort_env(copy);
+	i = 0;
+	while (copy[i])
+	{
+		print_export_line(copy[i]);
+		i++;
+	}
+	free(copy);
+	return (0);
+}
+
+int	ft_export(char **args, char ***envp)
+{
+	int		i;
+
+	if (!args[1])
+		return (print_export_sorted(envp));
+	i = 1;
+	while (args[i])
+	{
+		handle_export_arg(envp, args[i]);
+		i++;
 	}
 	return (0);
 }

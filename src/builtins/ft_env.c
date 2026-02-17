@@ -16,9 +16,9 @@ int	ft_env(char **args, char **envp)
 {
 	int	i;
 
-	if (!envp || args[1])
+	if (!envp)
 		return (1);
-	if (args[1] && args[1][0] == '-')
+	if (args[1] && args[1][0] == '-' && args[1][1] != '\0')
 	{
 		printf("env: invalid option '%s'\n", args[1]);
 		return (125);

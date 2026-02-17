@@ -31,8 +31,11 @@ int	is_redirection(t_type type)
 
 t_ast	*parser(t_shell *sh)
 {
+	t_token *start;
+
+	start = sh->tokens;
 	sh->ast = parse_pipe(&sh->tokens);
-	free_tokens(sh->tokens);
+	free_tokens(start);
 	if (!sh->ast)
 		return (NULL);
 	return (sh->ast);

@@ -62,7 +62,8 @@ SYNTAX_ERROR = \
 # Utility functions
 GLOBAL_UTILS = \
 		$(SRCS_DIR)/global_utils/free_utils.c \
-		$(SRCS_DIR)/global_utils/init.c
+		$(SRCS_DIR)/global_utils/init.c \
+		$(SRCS_DIR)/global_utils/env.c
 
 # Builtin sources
 BUILTIN_SRCS = \

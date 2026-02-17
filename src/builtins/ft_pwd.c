@@ -12,24 +12,10 @@
 
 #include "minishell.h"
 
-int	pwd_error(char **args)
-{
-	if (args[1] && args[1][0] == '-'
-		&& args[1][1])
-	{
-		printf("bash: pwd: %s: bad option\n", args[1]);
-		printf("pwd: usage: pwd\n");
-		return (2);
-	}
-	return (0);
-}
-
-int	ft_pwd(char **args)
+int	ft_pwd()
 {
 	char	*pwd;
 
-	if (pwd_error(args) == 2)
-		return (2);
 	pwd = getcwd(NULL, 0);
 	if (!pwd)
 	{

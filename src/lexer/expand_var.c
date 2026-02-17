@@ -1,23 +1,5 @@
 #include <lexer.h>
 
- char	*get_env_value(const char *var, char **env)
-{
-	int		i;
-	size_t	len;
-
-	i = 0;
-	len = ft_strlen(var);
-	if (!env || len == 0)
-		return (NULL);
-	while (env[i])
-	{
-		if (ft_strncmp(env[i], var, len) == 0 && env[i][len] == '=')
-			return (ft_strdup(env[i] + len + 1));
-		i++;
-	}
-	return (NULL);
-}
-
 static int get_var_name_len(const char *s)
 {
 	int	i;
@@ -68,13 +50,14 @@ void buf_add_var(t_lexer *lx, const char *input)
 	char	*value;
 	int		i;
 
-	if (handle_dollar_sign(lx, input) == 0)
+	if (handle_dollar_sign(lx, input) <= 0)
 		return ;
 	var_len = get_var_name_len(input + lx->i + 1);
 	if (var_len == 0)
 	{
 		buf_add(lx, '$');
-		return ;
+		lx->i++;
+		return;
 	}
 	var_name = ft_strndup(input + lx->i + 1, var_len);
 	value = get_env_value(var_name, lx->env);

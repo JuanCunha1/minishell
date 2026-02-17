@@ -33,14 +33,14 @@ int	is_builtin(char *str)
 	return (0);
 }
 
-int	builtin(char **args, char **envp)
+int	builtin(char **args, char ***envp)
 {
 	if (ft_strncmp(args[0], "cd", 3) == 0)
 		return (ft_cd(args, envp));
 	else if (ft_strncmp(args[0], "echo", 5) == 0)
 		return (ft_echo(args));
 	else if (ft_strncmp(args[0], "pwd", 4) == 0)
-		return (ft_pwd(args));
+		return (ft_pwd());
 	else if (ft_strncmp(args[0], "exit", 5) == 0)
 		return (ft_exit(args));
 	else if (ft_strncmp(args[0], "unset", 6) == 0)
@@ -48,6 +48,6 @@ int	builtin(char **args, char **envp)
 	else if (ft_strncmp(args[0], "export", 7) == 0)
 		return (ft_export(args, envp));
 	else if (ft_strncmp(args[0], "env", 4) == 0)
-		return (ft_env(args, envp));
+		return (ft_env(args, *envp));
 	return (1);
 }

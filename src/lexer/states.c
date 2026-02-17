@@ -39,16 +39,18 @@ static t_lexer	normal_state(t_lexer lx, const char *input, char c)
 
 static t_lexer	single_quote(t_lexer lx, char c, int quoted)
 {
+	(void)quoted;
 	if (c == '\'')
 		lx.state = LX_NORMAL;
 	else
 		buf_add(&lx, c);
-	lx.tokens->quoted = quoted;
+	//lx.tokens->quoted = quoted;
 	return (lx);
 }
 
 static t_lexer	double_quote(t_lexer lx, char c, const char *input, int quoted)
 {
+	(void)quoted;
 	if (c == '"')
 		lx.state = LX_NORMAL;
 	else if (c == '\\' && input[lx.i + 1] != '\0'
@@ -61,7 +63,7 @@ static t_lexer	double_quote(t_lexer lx, char c, const char *input, int quoted)
 		buf_add_var(&lx, input);
 	else
 		buf_add(&lx, c);
-	lx.tokens->quoted = quoted;
+	//lx.tokens->quoted = quoted;
 	return (lx);
 }
 

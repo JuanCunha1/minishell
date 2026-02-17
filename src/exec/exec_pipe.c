@@ -43,7 +43,7 @@ int	redirect_fd(int fd, int target)
 	return (0);
 }
 
-int	pipe_pid(t_pipe *p, char **envp)
+int	pipe_pid(t_pipe *p, char ***envp)
 {
 	if (p->input_fd != STDIN_FILENO
 		&& redirect_fd(p->input_fd, STDIN_FILENO) < 0)
@@ -56,7 +56,7 @@ int	pipe_pid(t_pipe *p, char **envp)
 	return (execute_cmd(p->node, envp, 1));
 }
 
-int	fork_pipe_cmd(t_pipe *p, char **envp)
+int	fork_pipe_cmd(t_pipe *p, char ***envp)
 {
 	if (!p)
 		return (-1);
@@ -94,7 +94,7 @@ int	return_status(t_pipe *p)
 	return (last_status);
 }
 
-int	execute_pipe_list(t_pipe *head, char **envp)
+int	execute_pipe_list(t_pipe *head, char ***envp)
 {
 	t_pipe	*p;
 
@@ -111,6 +111,8 @@ int	execute_pipe_list(t_pipe *head, char **envp)
 			p->next->input_fd = p->pipe_fd[0];
 		}
 		fork_pipe_cmd(p, envp);
+		if (p->input_fd != STDIN_FILENO)
+			close(p->input_fd);
 		if (p->pipe_fd[1] != -1)
 			close(p->pipe_fd[1]);
 		p = p->next;
@@ -147,7 +149,7 @@ t_pipe	*build_pipe_list(t_ast *node)
 	return (head);
 }
 
-int	execute_pipe(t_ast *node, char **envp)
+int	execute_pipe(t_ast *node, char ***envp)
 {
 	t_pipe	*pipes;
 	int		last_status;
@@ -156,7 +158,7 @@ int	execute_pipe(t_ast *node, char **envp)
 
 	pipes = build_pipe_list(node);
 	if (!pipes)
-		return (1);
+		return (-1);
 	last_status = execute_pipe_list(pipes, envp);
 	tmp = pipes;
 	while (tmp)

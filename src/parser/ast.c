@@ -12,23 +12,22 @@
 
 #include "minishell.h"
 
-static char	**parse_args_util(t_token **token, int size)
+static char	**parse_args_util(t_token **token, char **args)
 {
-	char	**args;
 	int		i;
-
-	args = malloc(sizeof(char *) * (size + 1));
-	if (!args)
-		return (NULL);
+	t_token	*start; 
+	
+	start = *token;
 	i = 0;
 	while (*token && (*token)->type_tok == T_STRING)
 	{
 		args[i] = ft_strdup((*token)->data);
 		if (!args[i])
 		{
-			while (i-- > 0)
-				free(args[i]);
+			while (i > 0)
+				free(args[--i]);
 			free(args);
+			*token = start;
 			return (NULL);
 		}
 		i++;
@@ -42,6 +41,7 @@ char	**parse_args(t_token **token)
 {
 	int		size;
 	t_token	*tmp;
+	char	**args;
 
 	size = 0;
 	tmp = *token;
@@ -50,5 +50,8 @@ char	**parse_args(t_token **token)
 		size++;
 		tmp = tmp->next;
 	}
-	return (parse_args_util(token, size));
+	args = malloc(sizeof(char *) * (size + 1));
+	if (!args)
+		return (NULL);
+	return (parse_args_util(token, args));
 }

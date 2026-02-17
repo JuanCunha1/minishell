@@ -21,7 +21,7 @@ void	emit_word(t_lexer *lx)
 
 	if (lx->buf_len == 0)
 		return ;
-	lx->buffer[lx->buf_len] = '\0';
+	buf_add(lx, '\0');
 	tok = create_token(ft_strdup(lx->buffer), T_STRING);
 	adding_token(&lx->tokens, tok);
 	lx->buf_len = 0;
@@ -29,6 +29,20 @@ void	emit_word(t_lexer *lx)
 
 void	buf_add(t_lexer *lx, char c)
 {
+	char	*tmp;
+	
+	
+	if (lx->buf_len + 1 >= lx->buf_cap)
+	{
+		lx->buf_cap *= 2;
+		tmp = realloc(lx->buffer, lx->buf_cap);
+		if (!lx->buffer)
+		{
+			free(lx->buffer);
+			return ;
+		}
+		lx->buffer = tmp;
+	}
 	lx->buffer[lx->buf_len++] = c;
 }
 

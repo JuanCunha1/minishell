@@ -12,39 +12,42 @@
 
 #include "minishell.h"
 
-static int	env_length(char **env)
+int	env_length(char **env)
 {
 	int	i;
 
-	if (!env)
-		return (0);
 	i = 0;
-	while (env[i])
+	while (env && env[i])
 		i++;
 	return (i);
 }
 
-static void	append_env_var(char **envp, char *arg)
+static int	add_env_var(char ***envp, char *arg)
 {
 	int		len;
-	char	**tmp;
+	char	**new_env;
+	int		i;
 
-	len = env_length(envp);
-	tmp = (char **)realloc(envp, sizeof(char *) * (len + 2));
-	if (!tmp)
+	len = env_length(*envp);
+	new_env = malloc(sizeof(char *) * (len + 2));
+	if (!new_env)
+		return (1);
+	i = 0;
+	while (i < len)
 	{
-		perror("realloc failed");
-		return ;
+		new_env[i] = (*envp)[i];
+		i++;
 	}
-	envp = tmp;
-	envp[len] = ft_strdup(arg);
-	if (!envp[len])
+	new_env[len] = ft_strdup(arg);
+	if (!new_env[len])
 	{
-		perror("strdup failed");
-		envp[len] = NULL;
-		return ;
+		free(new_env);
+		return (1);
 	}
-	envp[len + 1] = NULL;
+	new_env[len + 1] = NULL;
+	free(*envp);
+	*envp = new_env;
+	return (0);
 }
 
 static int	get_env_index(char **envp, char *name)
@@ -64,7 +67,7 @@ static int	get_env_index(char **envp, char *name)
 	return (-1);
 }
 
-static int	is_valid_env_name(char *s)
+static int is_valid_identifier(char *s)
 {
 	int		i;
 
@@ -80,30 +83,35 @@ static int	is_valid_env_name(char *s)
 	return (1);
 }
 
-void	handle_export_arg(char **envp, char *name, int has_equal, char *arg)
+void	handle_export_arg(char ***envp, char *arg)
 {
-	int	idx;
+	int		idx;
+	char	*name;
+	char	*equal;
 
-	if (!is_valid_env_name(name))
+	if (!is_valid_identifier(arg))
 	{
-		ft_putstr_fd("export: not a valid identifier", 2);
-		ft_putendl_fd(name, 2);
+		ft_putstr_fd("minishell: export: `", 2);
+		ft_putstr_fd(arg, 2);
+		ft_putendl_fd("': not a valid identifier", 2);
 		return ;
 	}
-	idx = get_env_index(envp, name);
-	if (!has_equal)
+	equal = ft_strchr(arg, '=');
+	if (!equal)
 		return ;
-	if (idx != -1)
+	if (equal)
 	{
-		free(envp[idx]);
-		if (has_equal)
-			envp[idx] = ft_strdup(arg);
+		name = ft_substr(arg, 0, equal - arg);
+		if (!name)
+			return ;
+		idx = get_env_index(*envp, name);
+		if (idx != -1)
+		{
+			free((*envp)[idx]);
+			(*envp)[idx] = ft_strdup(arg);
+		}
 		else
-			envp[idx] = ft_strdup(envp[idx]);
-		if (!envp[idx])
-			perror("strdup failed");
-		return ;
+			add_env_var(envp, arg);
+		free(name);
 	}
-	else
-		append_env_var(envp, arg);
 }

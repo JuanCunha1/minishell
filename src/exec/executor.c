@@ -108,7 +108,7 @@ void	execute_ast(t_ast *ast, t_shell *sh)
 }
 */
 
-int	exec_builtin_parent(t_ast *node, char **envp)
+int	exec_builtin_parent(t_ast *node, char ***envp)
 {
 	int	saved_stdin;
 	int	saved_stdout;
@@ -125,33 +125,33 @@ int	exec_builtin_parent(t_ast *node, char **envp)
 	return (return_value);
 }
 
-void	execute(t_ast *node, char **envp)
+void	execute(t_ast *node, char ***envp)
 {
 	char	*path;
 
 	apply_redirections(node->redirs);
 	if (is_builtin(node->args[0]))
 		exit(builtin(node->args, envp));
-	path = get_path(node->args[0], envp);
+	path = get_path(node->args[0], *envp);
 	if (!path)
 	{
 		ft_putstr_fd(node->args[0], 2);
 		ft_putendl_fd(": command not found", 2);
 		exit(127);
 	}
-	execve(path, node->args, envp);
+	execve(path, node->args, *envp);
 	perror(node->args[0]);
 	free(path);
 	exit(127);
 }
 
-int	execute_cmd(t_ast *node, char **envp, int in_pipe)
+int	execute_cmd(t_ast *node, char ***envp, int in_pipe)
 {
 	pid_t	pid;
 	int		status;
 
 	if (!node->args || !node->args[0])
-		return (1);
+		return (0);
 	if (is_builtin(node->args[0]) && !in_pipe)
 		return (exec_builtin_parent(node, envp));
 	pid = fork();
@@ -174,7 +174,7 @@ int	execute_cmd(t_ast *node, char **envp, int in_pipe)
 	return (1);
 }
 
-int	execute_ast(t_ast *node, char **envp, int in_pipe)
+int	execute_ast(t_ast *node, char ***envp, int in_pipe)
 {
 	if (!node)
 		return (1);

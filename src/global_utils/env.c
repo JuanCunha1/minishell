@@ -1,5 +1,24 @@
 #include "minishell.h"
 
+char *ft_strndup(const char *s, size_t n)
+{
+	size_t i;
+	char *dup;
+	if (!s)
+		return (NULL);
+	dup = (char *)malloc(sizeof(char) * (n + 1));
+	if (!dup)
+		return (NULL);
+	i = 0;
+	while (i < n && s[i])
+	{
+		dup[i] = s[i];
+		i++;
+	}
+	dup[i] = '\0';
+	return (dup);
+}
+
 char	*get_env_value(const char *var, char **env)
 {
 	int		i;
@@ -12,8 +31,30 @@ char	*get_env_value(const char *var, char **env)
 	while (env[i])
 	{
 		if (ft_strncmp(env[i], var, len) == 0 && env[i][len] == '=')
-			return (ft_strdup(env[i] + len + 1));
+			return (env[i] + len + 1);
 		i++;
 	}
 	return (NULL);
+}
+
+char	**envp_dup(char **ae)
+{
+	char	**copy;
+	int		i;
+	int		len;
+
+	i = 0;
+	len = 0;
+	while (ae[len])
+		len++;
+	copy = malloc(sizeof(char *) * (len + 1));
+	if (!copy)
+		return (NULL);
+	while (i < len)
+	{
+		copy[i] = ft_strdup(ae[i]);
+		i++;
+	}
+	copy[len] = NULL;
+	return (copy);
 }

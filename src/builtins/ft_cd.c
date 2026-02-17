@@ -13,73 +13,89 @@
 
 #include "minishell.h"
 
-void	update_pwd(char *old_pwd, char **envp)
+void	update_pwd(char *key, char *pwd, char ***envp)
 {
 	int		i;
-	char	*new_pwd;
+	char	*tmp;
+	size_t	len;
 
-	new_pwd = getcwd(NULL, 0);
-	if (!new_pwd)
-	{
-		free(old_pwd);
+	if (!pwd)
 		return ;
-	}
+	len = ft_strlen(key);
 	i = 0;
-	while (envp[i])
+	while ((*envp)[i])
 	{
-		if (ft_strncmp(envp[i], "PWD=", 4) == 0)
+		if (!ft_strncmp((*envp)[i], key, len))
 		{
-			free(envp[i]);
-			envp[i] = ft_strjoin("PWD=", new_pwd);
-		}
-		else if (ft_strncmp(envp[i], "OLDPWD=", 7) == 0)
-		{
-			free(envp[i]);
-			envp[i] = ft_strjoin("OLDPWD=", old_pwd);
+			tmp = ft_strjoin(key, pwd);
+			if (tmp)
+			{
+				free((*envp)[i]);
+				(*envp)[i] = tmp;
+			}
+			break ;
 		}
 		i++;
 	}
-	free(new_pwd);
 }
 
-static char	*get_cd_path(char **args, char **envp)
+int check_path(char *path)
 {
-	char	*home;
-
-	if (!args[1])
-	{
-		home = get_env_value("HOME", envp);
-		if (!home)
-		{
-			ft_putendl_fd("cd: HOME not set", 2);
-			return (NULL);
-		}
-		return (home);
-	}
-	return (args[1]);
-}
-
-int	ft_cd(char **args, char **envp)
-{
-	char	*old_pwd;
-	char	*next_path;
-
-	old_pwd = getcwd(NULL, 0);
-	if (!old_pwd)
+	if (!path)
 		return (1);
-	next_path = get_cd_path(args, envp);
-	if (!next_path)
-	{
-		free(old_pwd);
-		return (1);
-	}
-	if (chdir(next_path) == -1)
+	if (chdir(path) == -1)
 	{
 		perror("cd");
+		return (1);
+	}
+	return (0);
+}
+
+char	*correct_env_value(char **args, char **envp)
+{
+	char	*path;
+
+	if (!args[1] || !ft_strncmp(args[1], "~", 2))
+	{
+		path = get_env_value("HOME", envp);
+		if (!path)
+		{
+			ft_putendl_fd("minishell: cd: HOME not set", 2);
+			return (NULL);
+		}
+	}
+	else if (!ft_strncmp(args[1], "-", 2))
+	{
+		path = get_env_value("OLDPWD", envp);
+		if (!path)
+		{
+			ft_putendl_fd("minishell: cd: OLDPWD not set", 2);
+			return (NULL);
+		}
+		printf("%s\n", path);
+	}
+	else
+		path = args[1];
+	return (path);
+}
+
+int	ft_cd(char **args, char ***envp)
+{
+	char	*old_pwd;
+	char	*path;
+	char	*new_pwd;
+
+	old_pwd = getcwd(NULL, 0);
+	path = correct_env_value(args, *envp);
+	if (!path || check_path(path))
+	{
 		free(old_pwd);
 		return (1);
 	}
-	update_pwd(old_pwd, envp);
+	new_pwd = getcwd(NULL, 0);
+	update_pwd("OLDPWD=", old_pwd, envp);
+	update_pwd("PWD=", new_pwd, envp);
+	free(new_pwd);
 	free(old_pwd);
 	return (0);
 }

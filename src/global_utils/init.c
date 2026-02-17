@@ -7,6 +7,8 @@ t_shell	init_shell(char **envp)
 	sh.exit_status = 0;
 	sh.in_pipeline = 0;
 	sh.tokens = NULL;
+	sh.ast = NULL;
+	sh.str = NULL;
 	sh.envp = envp_dup(envp);
 	return (sh);
 }
