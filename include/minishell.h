@@ -6,7 +6,7 @@
 /*   By: jmarques <jmarques@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/26 12:39:10 by jmarques          #+#    #+#             */
-/*   Updated: 2025/11/26 12:39:16 by jmarques         ###   ########.fr       */
+/*   Updated: 2026/02/17 10:40:35 by jmarques         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,11 +51,7 @@
                                     \\______/                             \n\
 \n" COLOR_RESET
 
-/*----STRUCTS----
- * ESTE ES UN ENUM PARA SELECCIONAR EL TIPO DE TOKEN QUE ES PARA
- * EVITAR TENER MUCHOS IF COMPARANDO QUE ES.
- * FUNCION EN PROGRESO.
- * */
+/*----STRUCTS----*/
 
 typedef enum e_type
 {
@@ -72,7 +68,6 @@ typedef enum e_type
 	T_HEREDOC
 }	t_type;
 
-/*ESTA ES LA STRUCT PARA GUARDAR LOS TOKENS*/
 typedef struct s_token
 {
 	char			*data;
@@ -83,24 +78,24 @@ typedef struct s_token
 
 typedef struct s_heredoc
 {
-    char				*delimiter;
-    int					expand;
-    int					fd;
+	char				*delimiter;
+	int					expand;
+	int					fd;
 	struct s_heredoc	*next;
-}   t_heredoc;
+}	t_heredoc;
 
 typedef struct s_redir
 {
-    t_type			type;
-    char            *file;
-    struct s_redir  *next;
+	t_type			type;
+	char			*file;
+	struct s_redir	*next;
 }	t_redir;
 
 typedef struct s_ast
 {
 	t_type			type;
 	char			**args;
-	t_redir         *redirs;
+	t_redir			*redirs;
 	t_heredoc		*heredocs;
 	struct s_ast	*left;
 	struct s_ast	*right;
@@ -132,27 +127,20 @@ char	**envp_dup(char **ae);
 void	clear_and_leave(t_shell *base, char **args);
 char	*ft_strndup(const char *s, size_t n);
 
-t_token *lexer(const char *input, char **env, int exit_status);
-
+t_token	*lexer(const char *input, char **env, int exit_status);
 
 /*Parser*/
 t_ast	*parser(t_shell *sh);
 int		create_ast(t_token *token, t_ast *ast);
-//int		redirection(t_token **token, t_ast *ast);
-//int		parse_pipe(t_token **token, t_ast *ast);
-
 
 /* execute*/
-//void	execute_ast(t_ast *ast, t_shell *sh);
 void	ft_free_tab(char **tab);
 char	*get_path(char *cmd, char **env);
 void	exec_node(t_ast *node, t_shell *sh);
-//void	execute_pipe(t_ast *node, t_shell *sh);
 int		execute_pipe_recursive(t_ast *node, t_shell *sh, int input_fd);
 void	exec_node_no_fork(t_ast *node, t_shell *sh);
 void	free_ast(t_ast *node);
 void	fatal(const char *msg, int exit_code);
-//void	execute_redirection(t_ast *node, t_shell *sh);
 t_pipe	init_pipe(t_ast *node, t_shell *sh);
 
 void	free_tokens(t_token *token);
@@ -181,7 +169,7 @@ int		ft_unset(char **args, char ***envp);
 int		ft_export(char **args, char ***envp);
 void	handle_export_arg(char ***envp, char *arg);
 
-int 	ft_env(char **args, char **envp);
+int		ft_env(char **args, char **envp);
 
 char	*get_env_value(const char *var, char **env);
 
@@ -190,29 +178,29 @@ t_pipe	init_pipe(t_ast *node, t_shell *sh);
 t_ast	*init_ast(void);
 void	free_string_array(char **str);
 
-int process_heredocs(t_ast *ast, t_shell *sh);
-int read_heredoc(t_heredoc *hd, t_shell *sh);
+int		process_heredocs(t_ast *ast, t_shell *sh);
+int		read_heredoc(t_heredoc *hd, t_shell *sh);
 
-t_ast *parse_pipe(t_token **tokens);
-char **parse_command(t_token **tokens);
-void add_redir(t_redir **list, t_redir *new_redir);
+t_ast	*parse_pipe(t_token **tokens);
+char	**parse_command(t_token **tokens);
+void	add_redir(t_redir **list, t_redir *new_redir);
 t_redir	*create_redir(char *op, char *file);
-int	is_redirection(t_type type);
-t_ast *parse_redirection(t_token **token);
-int execute_ast(t_ast *node, char ***envp, int in_pipeline);
+int		is_redirection(t_type type);
+t_ast	*parse_redirection(t_token **token);
+int		execute_ast(t_ast *node, char ***envp, int in_pipeline);
 void	execute_redirection(t_ast *node, char **envp);
 int		execute_pipe(t_ast *node, char ***envp);
 int		apply_redirections(t_redir *redir);
 int		execute_cmd(t_ast *node, char ***envp, int in_pipe);
 
-void set_signals_prompt(void);
-void sigint_handler(int sig);
-int 	execute_pipe_list(t_pipe *head, char ***envp);
+void	set_signals_prompt(void);
+void	sigint_handler(int sig);
+int		execute_pipe_list(t_pipe *head, char ***envp);
 t_ast	*parse_command_segment(t_token **token);
 void	execute(t_ast *node, char ***envp);
 t_pipe	*build_pipe_list(t_ast *ast);
 int		check_tokens(t_token *token);
-int	is_operator(t_type type);
+int		is_operator(t_type type);
 char	**parse_args(t_token **token);
-int env_length(char **env);
+int		env_length(char **env);
 #endif

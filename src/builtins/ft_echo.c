@@ -6,7 +6,7 @@
 /*   By: jmarques <jmarques@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/10 11:55:41 by jmarques          #+#    #+#             */
-/*   Updated: 2026/02/10 11:55:54 by jmarques         ###   ########.fr       */
+/*   Updated: 2026/02/17 10:42:23 by jmarques         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ static int	is_n_flag(char *s)
 int	ft_echo(char **args)
 {
 	int	i;
-	int newline;
+	int	newline;
 
 	i = 1;
 	newline = 1;

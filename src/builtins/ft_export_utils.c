@@ -67,17 +67,27 @@ static int	get_env_index(char **envp, char *name)
 	return (-1);
 }
 
-static int is_valid_identifier(char *s)
+static int	is_valid_identifier(char *s)
 {
 	int		i;
 
 	if (!s || (!ft_isalpha(s[0]) && s[0] != '_'))
+	{
+		ft_putstr_fd("minishell: export: `", 2);
+		ft_putstr_fd(arg, 2);
+		ft_putendl_fd("': not a valid identifier", 2);
 		return (0);
+	}
 	i = 1;
 	while (s[i] && s[i] != '=')
 	{
 		if (!ft_isalnum(s[i]) && s[i] != '_')
+		{
+			ft_putstr_fd("minishell: export: `", 2);
+			ft_putstr_fd(arg, 2);
+			ft_putendl_fd("': not a valid identifier", 2);
 			return (0);
+		}
 		i++;
 	}
 	return (1);
@@ -90,12 +100,7 @@ void	handle_export_arg(char ***envp, char *arg)
 	char	*equal;
 
 	if (!is_valid_identifier(arg))
-	{
-		ft_putstr_fd("minishell: export: `", 2);
-		ft_putstr_fd(arg, 2);
-		ft_putendl_fd("': not a valid identifier", 2);
 		return ;
-	}
 	equal = ft_strchr(arg, '=');
 	if (!equal)
 		return ;

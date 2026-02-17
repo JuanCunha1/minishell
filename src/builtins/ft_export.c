@@ -6,25 +6,25 @@
 /*   By: jmarques <jmarques@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/10 12:01:56 by jmarques          #+#    #+#             */
-/*   Updated: 2026/02/10 12:02:01 by jmarques         ###   ########.fr       */
+/*   Updated: 2026/02/17 10:43:16 by jmarques         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static void swap(char **a, char **b)
+static void	swap(char **a, char **b)
 {
-	char *tmp;
+	char	*tmp;
 
 	tmp = *a;
 	*a = *b;
 	*b = tmp;
 }
 
-static void sort_env(char **env)
+static void	sort_env(char **env)
 {
-	int i;
-	int j;
+	int	i;
+	int	j;
 
 	i = 0;
 	while (env[i])
@@ -32,7 +32,8 @@ static void sort_env(char **env)
 		j = i + 1;
 		while (env[j])
 		{
-			if (ft_strncmp(env[i], env[j], ft_strlen(env[i]) + ft_strlen(env[j])) > 0)
+			if (ft_strncmp(env[i], env[j], ft_strlen(env[i])
+					+ ft_strlen(env[j])) > 0)
 				swap(&env[i], &env[j]);
 			j++;
 		}
@@ -40,10 +41,10 @@ static void sort_env(char **env)
 	}
 }
 
-static void print_export_line(char *var)
+static void	print_export_line(char *var)
 {
-	char *equal;
-	int name_len;
+	char	*equal;
+	int		name_len;
 
 	equal = ft_strchr(var, '=');
 	if (!equal)

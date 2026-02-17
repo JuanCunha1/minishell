@@ -1,10 +1,22 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   lexer.h                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jmarques <jmarques@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/02/17 10:32:03 by jmarques          #+#    #+#             */
+/*   Updated: 2026/02/17 10:35:40 by jmarques         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef LEXER_H
 # define LEXER_H
 
 # include <minishell.h>
 
-typedef struct s_token t_token;
-typedef enum e_type t_type;
+typedef struct s_token	t_token;
+typedef enum e_type		t_type;
 
 typedef enum e_lex_state
 {
@@ -16,20 +28,20 @@ typedef enum e_lex_state
 
 typedef struct s_lexer
 {
-    const char		*input;
-    size_t			i;
-    t_lex_state		state;
-    char			*buffer;
-    size_t			buf_len;
-    t_token			*tokens;
-	char			**env;
-	size_t			buf_cap;
-	int				last_exit_status;
+	const char	*input;
+	size_t		i;
+	t_lex_state	state;
+	char		*buffer;
+	size_t		buf_len;
+	t_token		*tokens;
+	char		**env;
+	size_t		buf_cap;
+	int			last_exit_status;
 }	t_lexer;
 
 t_lexer	states_loop(t_lexer lx, const char *input);
 
-t_token *create_token(char *str, t_type type);
+t_token	*create_token(char *str, t_type type);
 void	adding_token(t_token **tokens, t_token *new_token);
 
 void	emit_word(t_lexer *lx);

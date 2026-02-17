@@ -6,10 +6,9 @@
 /*   By: jmarques <jmarques@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/10 11:54:57 by jmarques          #+#    #+#             */
-/*   Updated: 2026/02/10 11:55:26 by jmarques         ###   ########.fr       */
+/*   Updated: 2026/02/17 10:41:47 by jmarques         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 
 #include "minishell.h"
 
@@ -39,7 +38,7 @@ void	update_pwd(char *key, char *pwd, char ***envp)
 	}
 }
 
-int check_path(char *path)
+int	check_path(char *path)
 {
 	if (!path)
 		return (1);
