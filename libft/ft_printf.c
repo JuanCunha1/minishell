@@ -9,7 +9,7 @@
 /*   Updated: 2025/05/15 14:27:38 by jmarques         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-# include <stdarg.h>
+#include <stdarg.h>
 #include "libft.h"
 
 static void	check_type(const char input, va_list args, ssize_t	*count)

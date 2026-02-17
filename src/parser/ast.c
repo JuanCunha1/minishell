@@ -15,8 +15,8 @@
 static char	**parse_args_util(t_token **token, char **args)
 {
 	int		i;
-	t_token	*start; 
-	
+	t_token	*start;
+
 	start = *token;
 	i = 0;
 	while (*token && (*token)->type_tok == T_STRING)

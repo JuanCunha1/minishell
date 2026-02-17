@@ -39,7 +39,7 @@ t_ast	*parse_pipe(t_token **token)
 		return (NULL);
 	while (*token && (*token)->type_tok == T_PIPE)
 	{
-		(*token) = (*token)->next;
+		*token = (*token)->next;
 		right = parse_command_segment(token);
 		if (!right)
 		{

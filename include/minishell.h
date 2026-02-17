@@ -205,4 +205,5 @@ int		env_length(char **env);
 int		redirect_fd(int fd, int target);
 void	free_pipe_list(t_pipe *head);
 int		return_status(pid_t pid);
+t_pipe	*new_pipe(t_ast *node);
 #endif

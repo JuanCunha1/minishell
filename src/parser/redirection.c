@@ -82,6 +82,11 @@ t_ast	*parse_command_segment(t_token **token)
 	if (!redirection(token, node))
 		return (NULL);
 	node->args = parse_args(token);
+	if (!node->args)
+	{
+		free_ast(node);
+		return (NULL);
+	}
 	if (!redirection(token, node))
 		return (NULL);
 	node->type = T_STRING;

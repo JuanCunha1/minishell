@@ -13,22 +13,6 @@
 #include "minishell.h"
 #include <sys/types.h>
 
-t_pipe	*new_pipe(t_ast *node)
-{
-	t_pipe	*p;
-
-	p = malloc(sizeof(t_pipe));
-	if (!p)
-		return (NULL);
-	p->node = node;
-	p->input_fd = STDIN_FILENO;
-	p->pipe_fd[0] = -1;
-	p->pipe_fd[1] = -1;
-	p->pid = -1;
-	p->next = NULL;
-	return (p);
-}
-
 void	pipe_pid(t_pipe *p, char ***envp)
 {
 	if (p->input_fd != STDIN_FILENO

@@ -1,9 +1,22 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   env.c                                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jmarques <jmarques@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/02/17 12:29:13 by jmarques          #+#    #+#             */
+/*   Updated: 2026/02/17 12:29:15 by jmarques         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
-char *ft_strndup(const char *s, size_t n)
+char	*ft_strndup(const char *s, size_t n)
 {
-	size_t i;
-	char *dup;
+	size_t	i;
+	char	*dup;
+
 	if (!s)
 		return (NULL);
 	dup = (char *)malloc(sizeof(char) * (n + 1));

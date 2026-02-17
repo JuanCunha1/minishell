@@ -15,6 +15,27 @@
 
 int	g_signal = 0;
 
+void	free_shell(t_shell *sh)
+{
+	if (!sh)
+		return ;
+	if (sh->str)
+	{
+		free(sh->str);
+		sh->str = NULL;
+	}
+	if (sh->tokens)
+	{
+		free_tokens(sh->tokens);
+		sh->tokens = NULL;
+	}
+	if (sh->ast)
+	{
+		free_ast(sh->ast);
+		sh->ast = NULL;
+	}
+}
+
 int	shell_loop(t_shell *sh)
 {
 	set_signals_prompt();
@@ -29,8 +50,8 @@ int	shell_loop(t_shell *sh)
 	add_history(sh->str);
 	sh->tokens = lexer(sh->str, sh->envp, sh->exit_status);
 	if (!sh->tokens)
-		return 1;
-	if(check_tokens(sh->tokens) == 2)
+		return (1);
+	if (check_tokens(sh->tokens) == 2)
 	{
 		sh->exit_status = 2;
 		return (1);

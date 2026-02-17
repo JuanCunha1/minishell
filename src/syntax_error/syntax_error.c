@@ -1,6 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   syntax_error.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jmarques <jmarques@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/02/17 12:07:45 by jmarques          #+#    #+#             */
+/*   Updated: 2026/02/17 12:07:47 by jmarques         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
-static int	syntax_newline_error()
+static int	syntax_newline_error(void)
 {
 	ft_putstr_fd("bash: syntax error near unexpected token 'newline'\n", 2);
 	return (2);
@@ -35,7 +47,7 @@ static int	syntax_error(t_token *token)
 
 int	check_tokens(t_token *token)
 {
-	t_token *tmp;
+	t_token	*tmp;
 
 	if (token && token->type_tok == T_PIPE)
 		return (syntax_token_error(token->data));
