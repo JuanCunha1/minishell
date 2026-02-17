@@ -78,7 +78,6 @@ void	buf_add_var(t_lexer *lx, const char *input)
 	{
 		while (value[i])
 			buf_add(lx, value[i++]);
-		free(value);
 	}
 	free(var_name);
 	lx->i += var_len;

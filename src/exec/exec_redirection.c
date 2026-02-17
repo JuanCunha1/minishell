@@ -40,7 +40,7 @@ static int	open_redir_file(t_redir *redir)
 	if (fd < 0)
 	{
 		perror(redir->file);
-		exit(1);
+		return (fd);
 	}
 	return (fd);
 }
@@ -53,6 +53,8 @@ int	apply_redirections(t_redir *redir)
 	while (redir)
 	{
 		fd = open_redir_file(redir);
+		if (fd < 0)
+			return (1);
 		if (redir->type == T_REDIR_IN)
 			target = STDIN_FILENO;
 		else

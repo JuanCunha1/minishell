@@ -22,11 +22,7 @@ static char	*resolve_path(char **args, char ***envp, int *alloc)
 	{
 		path = get_path(args[0], *envp);
 		if (!path)
-		{
-			ft_putstr_fd(args[0], 2);
-			ft_putendl_fd(": command not found", 2);
-			exit(127);
-		}
+			fatal(args[0], ": command not found", 127);
 		*alloc = 1;
 	}
 	return (path);
@@ -57,26 +53,25 @@ void	execute(char **args, char ***envp)
 	int		alloc;
 
 	if (!args[0] || args[0][0] == '\0')
-		{
-			ft_putendl_fd(": command not found", 2);
-			exit(127);
-		}
-		if (is_builtin(args[0]))
-			exit(builtin(args, envp));
-		path = resolve_path(args, envp, &alloc);
-		execve(path, args, *envp);
-		err = errno;
-		perror(path);
-		if (alloc)
-			free(path);
-		if (err == EACCES || err == EISDIR)
-			exit(126);
-		exit(127);
+		fatal("", ": command not found", 127);
+	if (is_builtin(args[0]))
+		exit(builtin(args, envp));
+	path = resolve_path(args, envp, &alloc);
+	execve(path, args, *envp);
+	err = errno;
+	perror(path);
+	if (alloc)
+		free(path);
+	if (err == EACCES || err == EISDIR)
+		exit(126);
+	exit(127);
 }
 
 int	execute_cmd(t_ast *node, char ***envp)
 {
 	pid_t	pid;
+	int		status;
+	int		sig;
 
 	if (!node->args || !node->args[0])
 		return (0);
@@ -95,7 +90,9 @@ int	execute_cmd(t_ast *node, char ***envp)
 		execute(node->args, envp);
 		exit(127);
 	}
-	return (return_status(pid));
+	status = return_status(pid, &sig);
+	sig_write(sig);
+	return (status);
 }
 
 int	execute_ast(t_ast *node, char ***envp)

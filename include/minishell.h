@@ -143,7 +143,7 @@ void	exec_node(t_ast *node, t_shell *sh);
 int		execute_pipe_recursive(t_ast *node, t_shell *sh, int input_fd);
 void	exec_node_no_fork(t_ast *node, t_shell *sh);
 void	free_ast(t_ast *node);
-void	fatal(const char *msg, int exit_code);
+void	fatal(char *arg, char *msg, int exit_code);
 t_pipe	init_pipe(t_ast *node, t_shell *sh);
 
 void	free_tokens(t_token *token);
@@ -207,6 +207,7 @@ char	**parse_args(t_token **token);
 int		env_length(char **env);
 int		redirect_fd(int fd, int target);
 void	free_pipe_list(t_pipe *head);
-int		return_status(pid_t pid);
+int		return_status(pid_t pid, int *sig);
 t_pipe	*new_pipe(t_ast *node);
+void	sig_write(int sig);
 #endif

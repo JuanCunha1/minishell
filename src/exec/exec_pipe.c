@@ -108,6 +108,7 @@ int	execute_pipe(t_ast *node, char ***envp)
 	t_pipe	*pipes;
 	int		last_status;
 	t_pipe	*tmp;
+	int		sig;
 
 	pipes = build_pipe_list(node);
 	if (!pipes)
@@ -117,9 +118,10 @@ int	execute_pipe(t_ast *node, char ***envp)
 	tmp = pipes;
 	while (tmp)
 	{
-		last_status = return_status(tmp->pid);
+		last_status = return_status(tmp->pid, &sig);
 		tmp = tmp->next;
 	}
+	sig_write(sig);
 	free_pipe_list(pipes);
 	return (last_status);
 }
