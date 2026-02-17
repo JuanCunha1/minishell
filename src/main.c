@@ -13,7 +13,7 @@
 #include "minishell.h"
 #include <readline/history.h>
 
-int	g_signal = 0;
+volatile sig_atomic_t g_signal = 0;
 
 void	free_shell(t_shell *sh)
 {
@@ -40,6 +40,8 @@ int	shell_loop(t_shell *sh)
 {
 	set_signals_prompt();
 	sh->str = readline("minishell> ");
+	if (g_signal == 130)
+		sh->exit_status = 130;
 	if (sh->str == NULL)
 	{
 		printf("exit\n");
@@ -57,7 +59,8 @@ int	shell_loop(t_shell *sh)
 		return (1);
 	}
 	sh->ast = parser(sh);
-	sh->exit_status = execute_ast(sh->ast, &sh->envp, 0);
+	set_signals_parent_exec();
+	sh->exit_status = execute_ast(sh->ast, &sh->envp);
 	return (1);
 }
 
@@ -68,6 +71,7 @@ int	main(int ac, char **av, char **envp)
 	if (ac > 1 && av[1])
 		return (0);
 	shell = init_shell(envp);
+
 	while (shell_loop(&shell))
 		free_shell(&shell);
 	free_string_array(shell.envp);

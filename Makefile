@@ -1,6 +1,6 @@
 # Compiler and flags
 CC = cc
-CFLAGS = -Wall -Wextra -Werror #-fsanitize=address -fsanitize=leak
+CFLAGS = -Wall -Wextra -Werror -MMD -MP #-fsanitize=address -fsanitize=leak
 READLINE = -lreadline -lncurses
 
 MAKEFLAGS += --no-print-directory
@@ -32,7 +32,7 @@ PARSER_SRCS = \
 		$(SRCS_DIR)/parser/parser.c \
 		$(SRCS_DIR)/parser/ast.c \
 		$(SRCS_DIR)/parser/pipe.c \
-		$(SRCS_DIR)/parser/redirection.c \
+		$(SRCS_DIR)/parser/redirection.c
 
 
 # Lexer sources
@@ -104,12 +104,15 @@ all: $(OBJS_DIR) $(LIBFT) $(NAME)
 $(OBJS_DIR):
 	@mkdir -p $(DIRS)
 
-$(NAME): $(OBJS)
+$(NAME): $(OBJS) $(LIBFT)
 	@echo "$(GREEN) - Building $(NAME)...$(RESET)"
 	@$(CC) $(CFLAGS) $(OBJS) -o $(NAME) $(LIBS)
 	@echo "$(YELLOW) - Compilation finished!$(RESET)"
 
-$(OBJS_DIR)/%.o: $(SRCS_DIR)/%.c
+-include $(OBJS:.o=.d)
+
+$(OBJS_DIR)/%.o: $(SRCS_DIR)/%.c Makefile
+	@mkdir -p $(dir $@)
 	@$(CC) $(CFLAGS) $(INCLUDES_FLAG) -c $< -o $@
 
 
@@ -134,6 +137,4 @@ fclean: clean
 
 re: fclean all
 
-nvim: fclean
-
-.PHONY: all clean fclean re nvim
+.PHONY: all clean fclean re

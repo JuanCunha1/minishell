@@ -16,13 +16,21 @@ int	return_status(pid_t pid)
 {
 	int	status;
 	int	last_status;
+	int	sig;
 
 	last_status = 1;
 	waitpid(pid, &status, 0);
 	if (WIFEXITED(status))
 		last_status = WEXITSTATUS(status);
 	else if (WIFSIGNALED(status))
-		last_status = 128 + WTERMSIG(status);
+	{
+		sig = WTERMSIG(status);
+		if (sig == SIGINT)
+			write(1, "\n", 1);
+		else if (sig == SIGQUIT)
+			write(1, "Quit (core dumped)\n", 19);
+		last_status = 128 + sig;
+	}
 	return (last_status);
 }
 
@@ -63,13 +71,13 @@ void	execute(t_ast *node, char ***envp)
 	exit(127);
 }
 
-int	execute_cmd(t_ast *node, char ***envp, int in_pipe)
+int	execute_cmd(t_ast *node, char ***envp)
 {
 	pid_t	pid;
 
 	if (!node->args || !node->args[0])
 		return (0);
-	if (is_builtin(node->args[0]) && !in_pipe)
+	if (is_builtin(node->args[0]))
 		return (exec_builtin_parent(node, envp));
 	pid = fork();
 	if (pid < 0)
@@ -86,13 +94,11 @@ int	execute_cmd(t_ast *node, char ***envp, int in_pipe)
 	return (return_status(pid));
 }
 
-int	execute_ast(t_ast *node, char ***envp, int in_pipe)
+int	execute_ast(t_ast *node, char ***envp)
 {
 	if (!node)
 		return (1);
-	signal(SIGINT, SIG_IGN);
-	signal(SIGQUIT, SIG_IGN);
 	if (node->type == T_PIPE)
 		return (execute_pipe(node, envp));
-	return (execute_cmd(node, envp, in_pipe));
+	return (execute_cmd(node, envp));
 }

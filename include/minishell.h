@@ -51,6 +51,8 @@
                                     \\______/                             \n\
 \n" COLOR_RESET
 
+extern volatile sig_atomic_t g_signal;
+
 /*----STRUCTS----*/
 
 typedef enum e_type
@@ -149,7 +151,7 @@ void	free_shell(t_shell *sh);
 
 /* signal */
 void	set_signals_prompt(void);
-void	set_signals_exec(void);
+void	set_signals_parent_exec(void);
 void	set_signals_child(void);
 /* Builtins*/
 
@@ -187,11 +189,11 @@ void	add_redir(t_redir **list, t_redir *new_redir);
 t_redir	*create_redir(char *op, char *file);
 int		is_redirection(t_type type);
 t_ast	*parse_redirection(t_token **token);
-int		execute_ast(t_ast *node, char ***envp, int in_pipeline);
+int		execute_ast(t_ast *node, char ***envp);
 void	execute_redirection(t_ast *node, char **envp);
 int		execute_pipe(t_ast *node, char ***envp);
 int		apply_redirections(t_redir *redir);
-int		execute_cmd(t_ast *node, char ***envp, int in_pipe);
+int		execute_cmd(t_ast *node, char ***envp);
 
 void	set_signals_prompt(void);
 void	sigint_handler(int sig);
