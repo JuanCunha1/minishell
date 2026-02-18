@@ -28,11 +28,7 @@ static t_lexer	normal_state(t_lexer lx, const char *input, char c)
 	int	len;
 
 	len = operator_len(input + lx.i);
-	if (c == '\'')
-		lx.state = LX_IN_SQUOTE;
-	else if (c == '"')
-		lx.state = LX_IN_DQUOTE;
-	else if (c == '\\' && input[lx.i + 1])
+	if (c == '\\' && input[lx.i + 1])
 	{
 		lx.i++;
 		buf_add(&lx, input[lx.i]);
@@ -48,20 +44,17 @@ static t_lexer	normal_state(t_lexer lx, const char *input, char c)
 	return (lx);
 }
 
-static t_lexer	single_quote(t_lexer lx, char c, int quoted)
+static t_lexer	single_quote(t_lexer lx, char c)
 {
-	(void)quoted;
 	if (c == '\'')
 		lx.state = LX_NORMAL;
 	else
 		buf_add(&lx, c);
-	lx.had_quotes = quoted;
 	return (lx);
 }
 
-static t_lexer	double_quote(t_lexer lx, char c, const char *input, int quoted)
+static t_lexer	double_quote(t_lexer lx, char c, const char *input)
 {
-	(void)quoted;
 	if (c == '"')
 		lx.state = LX_NORMAL;
 	else if (c == '\\' && input[lx.i + 1] != '\0'
@@ -74,7 +67,6 @@ static t_lexer	double_quote(t_lexer lx, char c, const char *input, int quoted)
 		buf_add_var(&lx, input);
 	else
 		buf_add(&lx, c);
-	lx.had_quotes = quoted;
 	return (lx);
 }
 
@@ -84,11 +76,24 @@ t_lexer	states_loop(t_lexer lx, const char *input)
 
 	c = input[lx.i];
 	if (lx.state == LX_NORMAL)
-		lx = normal_state(lx, input, c);
+	{
+		if (c == '\'')
+		{
+			lx.state = LX_IN_SQUOTE;
+			lx.had_quotes = 1;
+		}
+		else if (c == '"')
+		{
+			lx.state = LX_IN_DQUOTE;
+			lx.had_quotes = 1;
+		}
+		else
+			lx = normal_state(lx, input, c);
+	}
 	else if (lx.state == LX_IN_SQUOTE)
-		lx = single_quote(lx, c, 1);
+		lx = single_quote(lx, c);
 	else if (lx.state == LX_IN_DQUOTE)
-		lx = double_quote(lx, c, input, 1);
+		lx = double_quote(lx, c, input);
 	lx.i++;
 	return (lx);
 }
