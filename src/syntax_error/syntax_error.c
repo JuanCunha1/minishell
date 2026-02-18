@@ -14,13 +14,13 @@
 
 static int	syntax_newline_error(void)
 {
-	ft_putstr_fd("bash: syntax error near unexpected token 'newline'\n", 2);
+	ft_putendl_fd("minishell: syntax error near unexpected token 'newline'", 2);
 	return (2);
 }
 
 static int	syntax_token_error(char *tok)
 {
-	ft_putstr_fd("bash: syntax error near unexpected token '", 2);
+	ft_putstr_fd("minishell: syntax error near unexpected token '", 2);
 	ft_putstr_fd(tok, 2);
 	ft_putendl_fd("'", 2);
 	return (2);

@@ -22,7 +22,11 @@ static char	*resolve_path(char **args, char ***envp, int *alloc)
 	{
 		path = get_path(args[0], *envp);
 		if (!path)
-			fatal(args[0], ": command not found", 127);
+		{
+			ft_putstr_fd(args[0], 2);
+			ft_putendl_fd(": command not found", 2);
+			exit(127);
+		}
 		*alloc = 1;
 	}
 	return (path);
@@ -48,21 +52,28 @@ int	exec_builtin_parent(t_ast *node, char ***envp)
 
 void	execute(char **args, char ***envp)
 {
-	char	*path;
-	int		err;
-	int		alloc;
+	char		*path;
+	int			err;
+	int			alloc;
+	struct stat	st;
 
 	if (!args[0] || args[0][0] == '\0')
 		fatal("", ": command not found", 127);
 	if (is_builtin(args[0]))
 		exit(builtin(args, envp));
 	path = resolve_path(args, envp, &alloc);
+	if (stat(path, &st) == 0 && S_ISDIR(st.st_mode))
+	{
+		if (alloc)
+			free(path);
+		fatal(args[0], ": is a directory", 126);		
+	}
 	execve(path, args, *envp);
 	err = errno;
 	perror(path);
 	if (alloc)
 		free(path);
-	if (err == EACCES || err == EISDIR)
+	if (err == EACCES || err == EISDIR || err == ENOEXEC)
 		exit(126);
 	exit(127);
 }

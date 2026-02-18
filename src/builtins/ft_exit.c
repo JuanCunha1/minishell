@@ -55,12 +55,12 @@ static int	exit_check(char **args)
 
 int	ft_exit(char **args)
 {
-	if (!exit_check(args))
-		return (2);
-	if (args[1])
+	if (!args[1])
 	{
 		printf("exit\n");
 		exit(0);
 	}
+	if (!exit_check(args))
+		return (2);
 	return (1);
 }

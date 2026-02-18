@@ -39,6 +39,7 @@ static int	open_redir_file(t_redir *redir)
 		fd = open(redir->file, O_WRONLY | O_CREAT | O_APPEND, 0644);
 	if (fd < 0)
 	{
+		ft_putstr_fd("minishell: ", 2);
 		perror(redir->file);
 		return (fd);
 	}

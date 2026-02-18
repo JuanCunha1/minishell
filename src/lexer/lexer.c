@@ -36,9 +36,9 @@ int	lexer_error(t_lexer *lx)
 	if (lx->state != LX_IN_SQUOTE && lx->state != LX_IN_DQUOTE)
 		return (1);
 	if (lx->state == LX_IN_SQUOTE)
-		ft_putendl_fd("bash: unclosed quotes '", 2);
+		ft_putendl_fd("minishell: unclosed quotes '", 2);
 	else if (lx->state == LX_IN_DQUOTE)
-		ft_putendl_fd("bash: unclosed quotes \"", 2);
+		ft_putendl_fd("minishell: unclosed quotes \"", 2);
 	lx->last_exit_status = 2;
 	free(lx->buffer);
 	free_tokens(lx->tokens);
@@ -54,7 +54,7 @@ t_token	*lexer(const char *input, char **env, int exit_status)
 	if (lx.state == LX_ERROR)
 		return (NULL);
 	while (input[lx.i])
-		lx = states_loop(lx, input);
+		states_loop(&lx, input);
 	if (lexer_error(&lx) == 0)
 		return (NULL);
 	emit_word(&lx);

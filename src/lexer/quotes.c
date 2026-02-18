@@ -48,7 +48,7 @@ void	buf_add(t_lexer *lx, char c)
 	{
 		lx->buf_cap *= 2;
 		tmp = realloc(lx->buffer, lx->buf_cap);
-		if (!lx->buffer)
+		if (!tmp)
 		{
 			free(lx->buffer);
 			return ;

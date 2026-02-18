@@ -40,7 +40,7 @@ typedef struct s_lexer
 	int			last_exit_status;
 }	t_lexer;
 
-t_lexer	states_loop(t_lexer lx, const char *input);
+void	states_loop(t_lexer *lx, const char *input);
 
 t_token	*create_token(char *str, t_type type);
 void	adding_token(t_token **tokens, t_token *new_token);

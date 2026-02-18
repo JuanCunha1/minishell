@@ -36,8 +36,37 @@ void	free_shell(t_shell *sh)
 	}
 }
 
+void multiple_line(t_shell *sh, char **lines)
+{
+	int	i;
+
+	i = 0;
+	while (lines[i])
+	{
+		sh->tokens = lexer(lines[i], sh->envp, sh->exit_status);
+		if (!sh->tokens)
+		{
+			i++;
+			continue;
+		}
+		if (check_tokens(sh->tokens) == 2)
+		{
+			sh->exit_status = 2;
+			i++;
+			continue;
+		}
+		sh->ast = parser(sh);
+		set_signals_parent_exec();
+		sh->exit_status = execute_ast(sh->ast, &sh->envp);
+		free_shell(sh);
+		i++;
+	}
+}
+
 int	shell_loop(t_shell *sh)
 {
+	char	**lines;
+
 	set_signals_prompt();
 	sh->str = readline("minishell> ");
 	if (g_signal == 130)
@@ -50,28 +79,23 @@ int	shell_loop(t_shell *sh)
 	if (sh->str[0] == '\0')
 		return (1);
 	add_history(sh->str);
-	sh->tokens = lexer(sh->str, sh->envp, sh->exit_status);
-	if (!sh->tokens)
+	lines = ft_split(sh->str, '\n');
+	free(sh->str);
+	sh->str = NULL;
+	if (!lines)
 		return (1);
-	if (check_tokens(sh->tokens) == 2)
-	{
-		sh->exit_status = 2;
-		return (1);
-	}
-	sh->ast = parser(sh);
-	for (int i = 0; sh->ast->args[i]; i++)
-    	printf("argv[%d]=[%s]\n", i, sh->ast->args[i]);
-	set_signals_parent_exec();
-	sh->exit_status = execute_ast(sh->ast, &sh->envp);
+	multiple_line(sh, lines);
+	free_string_array(lines);
 	return (1);
 }
 
 int	main(int ac, char **av, char **envp)
 {
 	t_shell	shell;
-
-	if (ac > 1 && av[1])
-		return (0);
+	(void)ac;
+	(void)av;
+	//if (ac > 1 && av[1])
+	//	return (0);
 	shell = init_shell(envp);
 	while (shell_loop(&shell))
 		free_shell(&shell);
