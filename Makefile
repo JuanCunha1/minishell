@@ -32,8 +32,8 @@ PARSER_SRCS = \
 		$(SRCS_DIR)/parser/parser.c \
 		$(SRCS_DIR)/parser/ast.c \
 		$(SRCS_DIR)/parser/pipe.c \
-		$(SRCS_DIR)/parser/redirection.c
-
+		$(SRCS_DIR)/parser/redirection.c \
+		$(SRCS_DIR)/parser/heredoc.c
 
 # Lexer sources
 LEXER_SRCS = \

@@ -92,10 +92,9 @@ int	shell_loop(t_shell *sh)
 int	main(int ac, char **av, char **envp)
 {
 	t_shell	shell;
+
 	(void)ac;
 	(void)av;
-	//if (ac > 1 && av[1])
-	//	return (0);
 	shell = init_shell(envp);
 	while (shell_loop(&shell))
 		free_shell(&shell);

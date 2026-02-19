@@ -1,0 +1,13 @@
+int	execute_ast
+exec folder
+ exec/exec_heredoc
+modificar la funccion create heredoc en parser/heredoc para no usar ponteiros 
+
+
+process heredoc tiene que retornar el exit status correct 
+ejemplo: quando tiene algum problema pues retornar 1 quado esta ok 0 tiene otros resultado mas tiene que ver
+
+probar doble heredocs 
+cat << a << b
+
+ls | cat << a | wc

@@ -36,6 +36,7 @@ t_ast	*init_ast(void)
 	ast->left = NULL;
 	ast->right = NULL;
 	ast->redirs = NULL;
+	ast->heredocs = NULL;
 	ast->args = NULL;
 	return (ast);
 }

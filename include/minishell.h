@@ -187,9 +187,7 @@ int		read_heredoc(t_heredoc *hd, t_shell *sh);
 t_ast	*parse_pipe(t_token **tokens);
 char	**parse_command(t_token **tokens);
 void	add_redir(t_redir **list, t_redir *new_redir);
-t_redir	*create_redir(char *op, char *file);
 int		is_redirection(t_type type);
-t_ast	*parse_redirection(t_token **token);
 int		execute_ast(t_ast *node, char ***envp);
 void	execute_redirection(t_ast *node, char **envp);
 int		execute_pipe(t_ast *node, char ***envp);
@@ -210,4 +208,11 @@ void	free_pipe_list(t_pipe *head);
 int		return_status(pid_t pid, int *sig);
 t_pipe	*new_pipe(t_ast *node);
 void	sig_write(int sig);
+
+/* heredoc */
+t_heredoc *create_heredoc(char *delimiter, int expand);
+void add_heredoc(t_heredoc **list, t_heredoc *new_hd);
+
+/* free */
+void free_heredocs(t_heredoc *hd);
 #endif
