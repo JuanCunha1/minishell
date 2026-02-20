@@ -56,7 +56,6 @@ void	multiple_line(t_shell *sh, char **lines)
 			continue ;
 		}
 		sh->ast = parser(sh);
-		set_signals_parent_exec();
 		sh->exit_status = execute_ast(sh->ast, &sh->envp);
 		free_shell(sh);
 		i++;

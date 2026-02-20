@@ -28,30 +28,37 @@ void	add_redir(t_redir **list, t_redir *new_redir)
 	tmp->next = new_redir;
 }
 
+static int	fill_redir_arg(t_redir *redir, t_token *arg)
+{
+	if (!arg || arg->type_tok != T_STRING)
+		return (0);
+	if (redir->type == T_HEREDOC)
+		redir->expand = !arg->quoted;
+	redir->file = ft_strdup(arg->data);
+	if (!redir->file)
+		return (0);
+	return (1);
+}
+
 static t_redir	*parse_redir(t_token **token)
 {
 	t_redir	*redir;
+	t_token	*op;
+	t_token	*arg;
 
 	if (!*token || !is_redirection((*token)->type_tok))
 		return (NULL);
-	redir = malloc(sizeof(t_redir));
+	op = *token;
+	arg = op->next;
+	redir = init_redir(op->type_tok);
 	if (!redir)
 		return (NULL);
-	redir->type = (*token)->type_tok;
-	redir->next = NULL;
-	*token = (*token)->next;
-	if (!*token || (*token)->type_tok != T_STRING)
+	if (!fill_redir_arg(redir, arg))
 	{
 		free(redir);
 		return (NULL);
 	}
-	redir->file = ft_strdup((*token)->data);
-	if (!redir->file)
-	{
-		free(redir);
-		return (NULL);
-	}
-	*token = (*token)->next;
+	*token = arg->next;
 	return (redir);
 }
 

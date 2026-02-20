@@ -53,10 +53,13 @@ int	apply_redirections(t_redir *redir)
 
 	while (redir)
 	{
-		fd = open_redir_file(redir);
+		if (redir->type == T_HEREDOC)
+			fd = redir->fd;
+		else
+			fd = open_redir_file(redir);
 		if (fd < 0)
 			return (1);
-		if (redir->type == T_REDIR_IN)
+		if (redir->type == T_REDIR_IN || redir->type == T_HEREDOC)
 			target = STDIN_FILENO;
 		else
 			target = STDOUT_FILENO;

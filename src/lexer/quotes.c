@@ -35,6 +35,9 @@ void	emit_word(t_lexer *lx)
 		return ;
 	buf_add(lx, '\0');
 	tok = create_token(ft_strdup(lx->buffer), T_STRING);
+	if (!tok)
+		return ;
+	tok->quoted = lx->had_quotes;
 	adding_token(&lx->tokens, tok);
 	lx->buf_len = 0;
 	lx->had_quotes = 0;

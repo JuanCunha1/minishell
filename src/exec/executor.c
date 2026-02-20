@@ -111,6 +111,12 @@ int	execute_ast(t_ast *node, char ***envp)
 {
 	if (!node)
 		return (1);
+	if(prepare_heredocs(node, *envp))
+	{
+		set_signals_prompt();
+		return (130);
+	}
+	set_signals_parent_exec();
 	if (node->type == T_PIPE)
 		return (execute_pipe(node, envp));
 	return (execute_cmd(node, envp));

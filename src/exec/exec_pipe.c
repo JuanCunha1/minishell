@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include <sys/types.h>
 
 void	pipe_pid(t_pipe *p, char ***envp)
 {
@@ -116,14 +115,12 @@ int	execute_pipe(t_ast *node, char ***envp)
 	execute_pipe_list(pipes, envp);
 	last_status = 0;
 	tmp = pipes;
-	sig = 0;
 	while (tmp)
 	{
 		last_status = return_status(tmp->pid, &sig);
 		tmp = tmp->next;
 	}
-	if (sig == SIGINT)
-		write(1, "\n", 1);
+	sig_write(sig);
 	free_pipe_list(pipes);
 	return (last_status);
 }

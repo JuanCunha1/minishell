@@ -40,6 +40,21 @@ t_ast	*init_ast(void)
 	return (ast);
 }
 
+t_redir	*init_redir(t_type type)
+{
+	t_redir	*redir;
+
+	redir = malloc(sizeof(t_redir));
+	if (!redir)
+		return (NULL);
+	redir->type = type;
+	redir->next = NULL;
+	redir->fd = -1;
+	redir->expand = 0;
+	redir->file = NULL;
+	return (redir);
+}
+
 t_pipe	*new_pipe(t_ast *node)
 {
 	t_pipe	*p;

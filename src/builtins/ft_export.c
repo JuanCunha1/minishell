@@ -24,8 +24,9 @@ static char	*get_name(const char *s)
 
 static int	is_valid_identifier(char *s)
 {
-	int	i = 0;
+	int	i;
 
+	i = 0;
 	if (!s || (!ft_isalpha(s[0]) && s[0] != '_'))
 		return (0);
 	i = 1;

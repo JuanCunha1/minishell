@@ -45,8 +45,9 @@ int	env_length(char **env)
 int	get_env_index(char **env, char *name)
 {
 	int	i;
-	int	len = ft_strlen(name);
+	int	len;
 
+	len = ft_strlen(name);
 	i = 0;
 	while (env[i])
 	{
