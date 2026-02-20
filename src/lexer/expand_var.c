@@ -37,7 +37,6 @@ int	handle_dollar_sign(t_lexer *lx, const char *input)
 	if (input[lx->i + 1] == '\0')
 	{
 		buf_add(lx, '$');
-		lx->i++;
 		return (0);
 	}
 	if (input[lx->i + 1] == '?')
@@ -68,7 +67,6 @@ void	buf_add_var(t_lexer *lx, const char *input)
 	if (var_len == 0)
 	{
 		buf_add(lx, '$');
-		lx->i++;
 		return ;
 	}
 	var_name = ft_strndup(input + lx->i + 1, var_len);
