@@ -93,6 +93,7 @@ int	read_heredoc(char *delimiter, int expand, char **envp)
 		exit(0);
 	}
 	close(pipefd[1]);
+	waitpid(pid, &status, 0);
 	if (WIFSIGNALED(status))
     {
         close(pipefd[0]);
