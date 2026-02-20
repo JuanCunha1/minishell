@@ -210,4 +210,6 @@ void	free_pipe_list(t_pipe *head);
 int		return_status(pid_t pid, int *sig);
 t_pipe	*new_pipe(t_ast *node);
 void	sig_write(int sig);
+int		print_export_sorted(char **envp);
+int		get_env_index(char **env, char *name);
 #endif

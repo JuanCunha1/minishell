@@ -12,93 +12,100 @@
 
 #include "minishell.h"
 
-static void	swap(char **a, char **b)
-{
-	char	*tmp;
-
-	tmp = *a;
-	*a = *b;
-	*b = tmp;
-}
-
-static void	sort_env(char **env)
+static char	*get_name(const char *s)
 {
 	int	i;
-	int	j;
 
 	i = 0;
-	while (env[i])
+	while (s[i] && s[i] != '=')
+		i++;
+	return (ft_substr(s, 0, i));
+}
+
+static int	is_valid_identifier(char *s)
+{
+	int	i = 0;
+
+	if (!s || (!ft_isalpha(s[0]) && s[0] != '_'))
+		return (0);
+	i = 1;
+	while (s[i] && s[i] != '=')
 	{
-		j = i + 1;
-		while (env[j])
-		{
-			if (ft_strncmp(env[i], env[j], ft_strlen(env[i])
-					+ ft_strlen(env[j])) > 0)
-				swap(&env[i], &env[j]);
-			j++;
-		}
+		if (!ft_isalnum(s[i]) && s[i] != '_')
+			return (0);
 		i++;
 	}
+	return (1);
 }
 
-static void	print_export_line(char *var)
+static int	add_env_var(char ***envp, char *arg)
 {
-	char	*equal;
-	int		name_len;
-
-	equal = ft_strchr(var, '=');
-	if (!equal)
-	{
-		printf("declare -x %s\n", var);
-		return ;
-	}
-	name_len = equal - var;
-	ft_putstr_fd("declare -x ", 1);
-	write(1, var, name_len);
-	ft_putstr_fd("=\"", 1);
-	ft_putstr_fd(equal + 1, 1);
-	ft_putendl_fd("\"", 1);
-}
-
-int	print_export_sorted(char ***envp)
-{
-	char	**copy;
+	char	**new_env;
 	int		len;
 	int		i;
 
 	len = env_length(*envp);
-	copy = malloc(sizeof(char *) * (len + 1));
-	if (!copy)
+	new_env = malloc(sizeof(char *) * (len + 2));
+	if (!new_env)
 		return (1);
 	i = 0;
 	while (i < len)
 	{
-		copy[i] = (*envp)[i];
+		new_env[i] = (*envp)[i];
 		i++;
 	}
-	copy[len] = NULL;
-	sort_env(copy);
-	i = 0;
-	while (copy[i])
+	new_env[len] = ft_strdup(arg);
+	if (!new_env[len])
 	{
-		print_export_line(copy[i]);
-		i++;
+		free(new_env);
+		return (1);
 	}
-	free(copy);
+	new_env[len + 1] = NULL;
+	free(*envp);
+	*envp = new_env;
+	return (0);
+}
+
+static int	update_env_var(char ***envp, char *arg)
+{
+	char	*name;
+	int		idx;
+
+	name = get_name(arg);
+	if (!name)
+		return (1);
+	idx = get_env_index(*envp, name);
+	free(name);
+	if (idx == -1)
+		return (add_env_var(envp, arg));
+	free((*envp)[idx]);
+	(*envp)[idx] = ft_strdup(arg);
+	if (!(*envp)[idx])
+		return (1);
 	return (0);
 }
 
 int	ft_export(char **args, char ***envp)
 {
-	int		i;
+	int	i;
+	int	status;
 
+	status = 0;
 	if (!args[1])
-		return (print_export_sorted(envp));
+		return (print_export_sorted(*envp));
 	i = 1;
 	while (args[i])
 	{
-		handle_export_arg(envp, args[i]);
+		if (!is_valid_identifier(args[i]))
+		{
+			ft_putstr_fd("minishell: export: `", 2);
+			ft_putstr_fd(args[i], 2);
+			ft_putendl_fd("': not a valid identifier", 2);
+			status = 1;
+		}
+		else
+			update_env_var(envp, args[i]);
 		i++;
 	}
-	return (0);
+	return (status);
 }

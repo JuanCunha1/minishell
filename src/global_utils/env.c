@@ -32,6 +32,31 @@ char	*ft_strndup(const char *s, size_t n)
 	return (dup);
 }
 
+int	env_length(char **env)
+{
+	int	i;
+
+	i = 0;
+	while (env && env[i])
+		i++;
+	return (i);
+}
+
+int	get_env_index(char **env, char *name)
+{
+	int	i;
+	int	len = ft_strlen(name);
+
+	i = 0;
+	while (env[i])
+	{
+		if (!ft_strncmp(env[i], name, len) && env[i][len] == '=')
+			return (i);
+		i++;
+	}
+	return (-1);
+}
+
 char	*get_env_value(const char *var, char **env)
 {
 	int		i;

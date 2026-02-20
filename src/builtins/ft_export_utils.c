@@ -12,111 +12,90 @@
 
 #include "minishell.h"
 
-int	env_length(char **env)
+static void	swap(char **a, char **b)
+{
+	char	*tmp;
+
+	tmp = *a;
+	*a = *b;
+	*b = tmp;
+}
+
+static int	cmp_env_name(char *a, char *b)
 {
 	int	i;
 
 	i = 0;
-	while (env && env[i])
+	while (a[i] && a[i] != '=' && b[i] && b[i] != '=')
+	{
+		if (a[i] != b[i])
+			return ((unsigned char)a[i] - (unsigned char)b[i]);
 		i++;
-	return (i);
+	}
+	if ((a[i] == '=' || !a[i]) && (b[i] == '=' || !b[i]))
+		return (0);
+	if (a[i] == '=' || !a[i])
+		return (-1);
+	return (1);
 }
 
-static int	add_env_var(char ***envp, char *arg)
+static void	sort_env(char **env)
 {
+	int	i;
+	int	j;
+
+	i = 0;
+	while (env[i])
+	{
+		j = i + 1;
+		while (env[j])
+		{
+			if (cmp_env_name(env[i], env[j]) > 0)
+				swap(&env[i], &env[j]);
+			j++;
+		}
+		i++;
+	}
+}
+
+static void	print_export_line(char *var)
+{
+	char	*equal;
+
+	equal = ft_strchr(var, '=');
+	if (!equal)
+	{
+		printf("declare -x %s\n", var);
+		return ;
+	}
+	printf("declare -x %.*s=\"%s\"\n",
+		(int)(equal - var), var, equal + 1);
+}
+
+int	print_export_sorted(char **envp)
+{
+	char	**copy;
 	int		len;
-	char	**new_env;
 	int		i;
 
-	len = env_length(*envp);
-	new_env = malloc(sizeof(char *) * (len + 2));
-	if (!new_env)
+	len = env_length(envp);
+	copy = malloc(sizeof(char *) * (len + 1));
+	if (!copy)
 		return (1);
 	i = 0;
 	while (i < len)
 	{
-		new_env[i] = (*envp)[i];
+		copy[i] = envp[i];
 		i++;
 	}
-	new_env[len] = ft_strdup(arg);
-	if (!new_env[len])
-	{
-		free(new_env);
-		return (1);
-	}
-	new_env[len + 1] = NULL;
-	free(*envp);
-	*envp = new_env;
-	return (0);
-}
-
-static int	get_env_index(char **envp, char *name)
-{
-	int		i;
-	int		len;
-
-	len = ft_strlen(name);
+	copy[len] = NULL;
+	sort_env(copy);
 	i = 0;
-	while (envp[i])
+	while (copy[i])
 	{
-		if (!ft_strncmp(envp[i], name, len)
-			&& envp[i][len] == '=')
-			return (i);
+		print_export_line(copy[i]);
 		i++;
 	}
-	return (-1);
-}
-
-static int	is_valid_identifier(char *s)
-{
-	int		i;
-
-	if (!s || (!ft_isalpha(s[0]) && s[0] != '_'))
-	{
-		ft_putstr_fd("minishell: export: `", 2);
-		ft_putstr_fd(s, 2);
-		ft_putendl_fd("': not a valid identifier", 2);
-		return (0);
-	}
-	i = 1;
-	while (s[i] && s[i] != '=')
-	{
-		if (!ft_isalnum(s[i]) && s[i] != '_')
-		{
-			ft_putstr_fd("minishell: export: `", 2);
-			ft_putstr_fd(s, 2);
-			ft_putendl_fd("': not a valid identifier", 2);
-			return (0);
-		}
-		i++;
-	}
-	return (1);
-}
-
-void	handle_export_arg(char ***envp, char *arg)
-{
-	int		idx;
-	char	*name;
-	char	*equal;
-
-	if (!is_valid_identifier(arg))
-		return ;
-	equal = ft_strchr(arg, '=');
-	if (!equal)
-		return ;
-	if (equal)
-	{
-		name = ft_substr(arg, 0, equal - arg);
-		if (!name)
-			return ;
-		idx = get_env_index(*envp, name);
-		if (idx != -1)
-		{
-			free((*envp)[idx]);
-			(*envp)[idx] = ft_strdup(arg);
-		}
-		else
-			add_env_var(envp, arg);
-		free(name);
-	}
+	free(copy);
+	return (0);
 }
