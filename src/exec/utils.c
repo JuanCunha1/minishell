@@ -25,8 +25,7 @@ int	return_status(pid_t pid, int *sig)
 	int	status;
 	int	last_status;
 
-	*sig = 0;
-	last_status = 1;
+	last_status = 0;
 	waitpid(pid, &status, 0);
 	if (WIFEXITED(status))
 		last_status = WEXITSTATUS(status);

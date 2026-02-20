@@ -116,12 +116,14 @@ int	execute_pipe(t_ast *node, char ***envp)
 	execute_pipe_list(pipes, envp);
 	last_status = 0;
 	tmp = pipes;
+	sig = 0;
 	while (tmp)
 	{
 		last_status = return_status(tmp->pid, &sig);
 		tmp = tmp->next;
 	}
-	sig_write(sig);
+	if (sig == SIGINT)
+		write(1, "\n", 1);
 	free_pipe_list(pipes);
 	return (last_status);
 }

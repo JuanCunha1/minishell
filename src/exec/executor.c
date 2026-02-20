@@ -66,7 +66,7 @@ void	execute(char **args, char ***envp)
 	{
 		if (alloc)
 			free(path);
-		fatal(args[0], ": is a directory", 126);		
+		fatal(args[0], ": is a directory", 126);
 	}
 	execve(path, args, *envp);
 	err = errno;
@@ -102,6 +102,7 @@ int	execute_cmd(t_ast *node, char ***envp)
 		exit(127);
 	}
 	status = return_status(pid, &sig);
+	set_signals_prompt();
 	sig_write(sig);
 	return (status);
 }

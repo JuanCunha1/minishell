@@ -36,7 +36,7 @@ void	free_shell(t_shell *sh)
 	}
 }
 
-void multiple_line(t_shell *sh, char **lines)
+void	multiple_line(t_shell *sh, char **lines)
 {
 	int	i;
 
@@ -47,13 +47,13 @@ void multiple_line(t_shell *sh, char **lines)
 		if (!sh->tokens)
 		{
 			i++;
-			continue;
+			continue ;
 		}
 		if (check_tokens(sh->tokens) == 2)
 		{
 			sh->exit_status = 2;
 			i++;
-			continue;
+			continue ;
 		}
 		sh->ast = parser(sh);
 		set_signals_parent_exec();
@@ -92,10 +92,9 @@ int	shell_loop(t_shell *sh)
 int	main(int ac, char **av, char **envp)
 {
 	t_shell	shell;
+
 	(void)ac;
 	(void)av;
-	//if (ac > 1 && av[1])
-	//	return (0);
 	shell = init_shell(envp);
 	while (shell_loop(&shell))
 		free_shell(&shell);
