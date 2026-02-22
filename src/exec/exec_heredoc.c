@@ -41,7 +41,8 @@ char	*expand_string_for_heredoc(const char *input, char **env,
 	return (lx.buffer);
 }
 
-int	loop_heredoc(int expand, char *delimiter, char **envp, int fd)
+int	loop_heredoc(t_redir hd, char **envp, int last_status,
+	int fd)
 {
 	char	*tmp;
 	char	*line;
@@ -52,18 +53,18 @@ int	loop_heredoc(int expand, char *delimiter, char **envp, int fd)
 		if (!line)
 		{
 			ft_putstr_fd("minishell: warning: here-document delimited by end-of-file (wanted `", 1);
-			ft_putstr_fd(delimiter, 1);
+			ft_putstr_fd(hd.file, 1);
 			ft_putendl_fd("')", 1);
 			return(0);
 		}
-		if (!ft_strncmp(line, delimiter, ft_strlen(delimiter) + 1))
+		if (!ft_strncmp(line, hd.file, ft_strlen(hd.file) + 1))
 		{
 			free(line);
 			return (0);
 		}
-		if (expand)
+		if (hd.expand)
 		{
-			tmp = expand_string_for_heredoc(line, envp, g_signal);
+			tmp = expand_string_for_heredoc(line, envp, last_status);
 			free(line);
 			if (!tmp)
 				return (-1);
@@ -74,7 +75,7 @@ int	loop_heredoc(int expand, char *delimiter, char **envp, int fd)
 	}
 }
 
-int	read_heredoc(char *delimiter, int expand, char **envp)
+int	read_heredoc(t_redir heredoc, char **envp, int last_status)
 {
 	int		pipefd[2];
 	pid_t	pid;
@@ -87,14 +88,14 @@ int	read_heredoc(char *delimiter, int expand, char **envp)
 	{
 		close(pipefd[0]);
 		set_signals_heredoc();
-		if(loop_heredoc(expand, delimiter, envp, pipefd[1]) == -1)
+		if(loop_heredoc(heredoc, envp, last_status, pipefd[1]) == -1)
 			exit(1);
 		close(pipefd[1]);
 		exit(0);
 	}
 	close(pipefd[1]);
 	waitpid(pid, &status, 0);
-	if (WIFSIGNALED(status))
+	if (WIFEXITED(status) && WEXITSTATUS(status) == 130)
     {
         close(pipefd[0]);
         return (-1);
@@ -102,7 +103,7 @@ int	read_heredoc(char *delimiter, int expand, char **envp)
     return (pipefd[0]);
 }
 
-int	prepare_heredocs(t_ast *ast, char **envp)
+int	prepare_heredocs(t_ast *ast, char **envp, int last_status)
 {
 	t_redir	*r;
 
@@ -110,9 +111,9 @@ int	prepare_heredocs(t_ast *ast, char **envp)
 		return (0);
 	if (ast->type == T_PIPE)
 	{
-		if (prepare_heredocs(ast->left, envp))
+		if (prepare_heredocs(ast->left, envp, last_status))
 			return (1);
-		if (prepare_heredocs(ast->right, envp))
+		if (prepare_heredocs(ast->right, envp, last_status))
 			return (1);
 		return (0);
 	}
@@ -121,7 +122,7 @@ int	prepare_heredocs(t_ast *ast, char **envp)
 	{
 		if (r->type == T_HEREDOC)
 		{
-			r->fd = read_heredoc(r->file, r->expand, envp);
+			r->fd = read_heredoc(*r, envp, last_status);
 			if (r->fd < 0)
 				return (1);
 		}

@@ -172,7 +172,7 @@ int		is_redirection(t_type type);
 
 /* ============================== EXEC ================================== */
 
-int		execute_ast(t_ast *node, char ***envp);
+int		execute_ast(t_ast *node, char ***envp, int last_status);
 int		execute_cmd(t_ast *node, char ***envp);
 int		execute_pipe(t_ast *node, char ***envp);
 void	execute_redirection(t_ast *node, char **envp);
@@ -192,8 +192,8 @@ void	fatal(char *arg, char *msg, int exit_code);
 
 /* ============================== HEREDOC =============================== */
 
-int		read_heredoc(char *delimiter, int expand, char **envp);
-int		prepare_heredocs(t_ast *ast, char **envp);
+int		read_heredoc(t_redir heredoc, char **envp, int last_status);
+int		prepare_heredocs(t_ast *ast, char **envp, int last_status);
 
 /* ============================== SIGNALS =============================== */
 
@@ -219,6 +219,7 @@ int		print_export_sorted(char **envp);
 int		ft_env(char **args, char **envp);
 
 void	handle_export_arg(char ***envp, char *arg);
+int		is_valid_identifier(char *s);
 
 /* ============================== SHELL ================================ */
 

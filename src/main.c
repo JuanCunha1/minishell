@@ -56,7 +56,7 @@ void	multiple_line(t_shell *sh, char **lines)
 			continue ;
 		}
 		sh->ast = parser(sh);
-		sh->exit_status = execute_ast(sh->ast, &sh->envp);
+		sh->exit_status = execute_ast(sh->ast, &sh->envp, sh->exit_status);
 		free_shell(sh);
 		i++;
 	}

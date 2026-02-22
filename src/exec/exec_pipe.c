@@ -114,6 +114,7 @@ int	execute_pipe(t_ast *node, char ***envp)
 		return (1);
 	execute_pipe_list(pipes, envp);
 	last_status = 0;
+	sig = 0;
 	tmp = pipes;
 	while (tmp)
 	{

@@ -19,7 +19,7 @@ void	handle_signal_heredoc(int sig)
 		return ;
 	g_signal = 130;
 	write(1, "\n", 1);
-	exit(0);
+	exit(130);
 }
 
 void	set_signals_heredoc(void)

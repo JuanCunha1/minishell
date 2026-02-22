@@ -22,23 +22,6 @@ static char	*get_name(const char *s)
 	return (ft_substr(s, 0, i));
 }
 
-static int	is_valid_identifier(char *s)
-{
-	int	i;
-
-	i = 0;
-	if (!s || (!ft_isalpha(s[0]) && s[0] != '_'))
-		return (0);
-	i = 1;
-	while (s[i] && s[i] != '=')
-	{
-		if (!ft_isalnum(s[i]) && s[i] != '_')
-			return (0);
-		i++;
-	}
-	return (1);
-}
-
 static int	add_env_var(char ***envp, char *arg)
 {
 	char	**new_env;
@@ -71,6 +54,7 @@ static int	update_env_var(char ***envp, char *arg)
 {
 	char	*name;
 	int		idx;
+	char	*dup;
 
 	name = get_name(arg);
 	if (!name)
@@ -79,17 +63,34 @@ static int	update_env_var(char ***envp, char *arg)
 	free(name);
 	if (idx == -1)
 		return (add_env_var(envp, arg));
-	free((*envp)[idx]);
-	(*envp)[idx] = ft_strdup(arg);
-	if (!(*envp)[idx])
+	dup = ft_strdup(arg);
+	if (!dup)
 		return (1);
+	free((*envp)[idx]);
+	(*envp)[idx] = dup;
+	return (0);
+}
+
+static int new_env(char *arg, char ***envp)
+{
+	int		idx;
+	char	*tmp;
+
+	idx = get_env_index(*envp, arg);
+	if (idx == -1)
+	{
+		tmp = ft_strjoin(arg, "=");
+		if (!tmp || update_env_var(envp, tmp))
+			return (1);
+		free(tmp);
+	}
 	return (0);
 }
 
 int	ft_export(char **args, char ***envp)
 {
-	int	i;
-	int	status;
+	int		i;
+	int		status;
 
 	status = 0;
 	if (!args[1])
@@ -104,8 +105,10 @@ int	ft_export(char **args, char ***envp)
 			ft_putendl_fd("': not a valid identifier", 2);
 			status = 1;
 		}
+		else if (ft_strchr(args[i], '='))
+			status = update_env_var(envp, args[i]);
 		else
-			update_env_var(envp, args[i]);
+			status = new_env(args[i], envp);
 		i++;
 	}
 	return (status);

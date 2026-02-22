@@ -12,15 +12,6 @@
 
 #include "minishell.h"
 
-static void	swap(char **a, char **b)
-{
-	char	*tmp;
-
-	tmp = *a;
-	*a = *b;
-	*b = tmp;
-}
-
 static int	cmp_env_name(char *a, char *b)
 {
 	int	i;
@@ -32,17 +23,35 @@ static int	cmp_env_name(char *a, char *b)
 			return ((unsigned char)a[i] - (unsigned char)b[i]);
 		i++;
 	}
-	if ((a[i] == '=' || !a[i]) && (b[i] == '=' || !b[i]))
+	if ((a[i] == '=' || a[i] == '\0') && (b[i] == '=' || b[i] == '\0'))
 		return (0);
-	if (a[i] == '=' || !a[i])
+	if (a[i] == '=' || a[i] == '\0')
 		return (-1);
+	return (1);
+}
+
+int	is_valid_identifier(char *s)
+{
+	int	i;
+
+	i = 0;
+	if (!s || (!ft_isalpha(s[0]) && s[0] != '_'))
+		return (0);
+	i = 1;
+	while (s[i] && s[i] != '=')
+	{
+		if (!ft_isalnum(s[i]) && s[i] != '_')
+			return (0);
+		i++;
+	}
 	return (1);
 }
 
 static void	sort_env(char **env)
 {
-	int	i;
-	int	j;
+	int		i;
+	int		j;
+	char	*tmp;
 
 	i = 0;
 	while (env[i])
@@ -51,7 +60,11 @@ static void	sort_env(char **env)
 		while (env[j])
 		{
 			if (cmp_env_name(env[i], env[j]) > 0)
-				swap(&env[i], &env[j]);
+			{
+				tmp = env[i];
+				env[i] = env[j];
+				env[j] = tmp;
+			}
 			j++;
 		}
 		i++;
@@ -60,16 +73,18 @@ static void	sort_env(char **env)
 
 static void	print_export_line(char *var)
 {
-	char	*equal;
+	char	*eq;
+	int		len;
 
-	equal = ft_strchr(var, '=');
-	if (!equal)
-	{
-		printf("declare -x %s\n", var);
-		return ;
-	}
-	printf("declare -x %.*s=\"%s\"\n",
-		(int)(equal - var), var, equal + 1);
+	eq = ft_strchr(var, '=');
+	if (!eq)
+		len = ft_strlen(var);
+	else
+		len = eq - var;
+	if (!eq || eq[1] == '\0')
+		printf("declare -x %.*s\n", len, var);
+	else
+		printf("declare -x %.*s=\"%s\"\n", len, var, eq + 1);
 }
 
 int	print_export_sorted(char **envp)
@@ -91,10 +106,9 @@ int	print_export_sorted(char **envp)
 	copy[len] = NULL;
 	sort_env(copy);
 	i = 0;
-	while (copy[i])
+	while (i < len)
 	{
-		print_export_line(copy[i]);
-		i++;
+		print_export_line(copy[i++]);
 	}
 	free(copy);
 	return (0);

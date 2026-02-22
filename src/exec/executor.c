@@ -88,6 +88,7 @@ int	execute_cmd(t_ast *node, char ***envp)
 		return (0);
 	if (is_builtin(node->args[0]))
 		return (exec_builtin_parent(node, envp));
+	sig = 0;
 	pid = fork();
 	if (pid < 0)
 	{
@@ -107,16 +108,13 @@ int	execute_cmd(t_ast *node, char ***envp)
 	return (status);
 }
 
-int	execute_ast(t_ast *node, char ***envp)
+int	execute_ast(t_ast *node, char ***envp, int last_status)
 {
 	if (!node)
 		return (1);
 	set_signals_parent_exec();
-	if(prepare_heredocs(node, *envp))
-	{
-		set_signals_prompt();
+	if(prepare_heredocs(node, *envp, last_status))
 		return (130);
-	}
 	if (node->type == T_PIPE)
 		return (execute_pipe(node, envp));
 	return (execute_cmd(node, envp));
