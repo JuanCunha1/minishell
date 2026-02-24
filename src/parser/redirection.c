@@ -30,7 +30,7 @@ void	add_redir(t_redir **list, t_redir *new_redir)
 
 static int	fill_redir_arg(t_redir *redir, t_token *arg)
 {
-	if (!arg || arg->type_tok != T_STRING)
+	if (!arg || arg->type_tok != T_CMD)
 		return (0);
 	if (redir->type == T_HEREDOC)
 		redir->expand = !arg->quoted;
@@ -96,6 +96,6 @@ t_ast	*parse_command_segment(t_token **token)
 	}
 	if (!redirection(token, node))
 		return (NULL);
-	node->type = T_STRING;
+	node->type = T_CMD;
 	return (node);
 }

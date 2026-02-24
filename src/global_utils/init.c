@@ -32,7 +32,7 @@ t_ast	*init_ast(void)
 	ast = malloc(sizeof(t_ast));
 	if (!ast)
 		return (NULL);
-	ast->type = T_STRING;
+	ast->type = T_CMD;
 	ast->left = NULL;
 	ast->right = NULL;
 	ast->redirs = NULL;

@@ -15,27 +15,6 @@
 
 volatile sig_atomic_t	g_signal = 0;
 
-void	free_shell(t_shell *sh)
-{
-	if (!sh)
-		return ;
-	if (sh->str)
-	{
-		free(sh->str);
-		sh->str = NULL;
-	}
-	if (sh->tokens)
-	{
-		free_tokens(sh->tokens);
-		sh->tokens = NULL;
-	}
-	if (sh->ast)
-	{
-		free_ast(sh->ast);
-		sh->ast = NULL;
-	}
-}
-
 void	multiple_line(t_shell *sh, char **lines)
 {
 	int	i;
@@ -62,12 +41,52 @@ void	multiple_line(t_shell *sh, char **lines)
 	}
 }
 
+static char	*shorten_home(char *pwd, char *home)
+{
+	char	*tmp;
+
+	if (!pwd || !home)
+		return (ft_strdup(pwd));
+	if (!ft_strncmp(pwd, home, ft_strlen(home)))
+	{
+		tmp = ft_strjoin("~", pwd + ft_strlen(home));
+		if (!tmp)
+			return (NULL);
+		return (tmp);
+	}
+	return (ft_strdup(pwd));
+}
+
+static char	*write_pwd(char **envp)
+{
+	char	*pwd;
+	char	*home;
+	char	*short_pwd;
+	char	*tmp;
+	char	*prompt;
+
+	pwd = get_env_value("PWD", envp);
+	home = get_env_value("HOME", envp);
+	if (!pwd)
+		pwd = "";
+	short_pwd = shorten_home(pwd, home);
+	if (!short_pwd)
+		return (NULL);
+	tmp = ft_strjoin("\001\033[1;32m\002minishell:\001\033[0m\002:"\
+"\001\033[1;34m\002", short_pwd);
+	free(short_pwd);
+	if (!tmp)
+		return (NULL);
+	prompt = ft_strjoin(tmp, "\001\033[0m\002$ ");
+	free(tmp);
+	return (prompt);
+}
+
 int	shell_loop(t_shell *sh)
 {
 	char	**lines;
 
 	set_signals_prompt();
-	sh->str = readline("minishell> ");
 	if (g_signal == 130)
 		sh->exit_status = 130;
 	if (sh->str == NULL)
@@ -91,12 +110,23 @@ int	shell_loop(t_shell *sh)
 int	main(int ac, char **av, char **envp)
 {
 	t_shell	shell;
+	char	*prompt;
+	int		loop;
 
 	(void)ac;
 	(void)av;
+	loop = 1;
 	shell = init_shell(envp);
-	while (shell_loop(&shell))
-		free_shell(&shell);
+	printf("%s", MINISHELL_BANNER);
+	while (loop)
+	{
+		prompt = write_pwd(shell.envp);
+		if (!prompt)
+			continue ;
+		shell.str = readline(prompt);
+		free(prompt);
+		loop = shell_loop(&shell);
+	}
 	free_string_array(shell.envp);
 	rl_clear_history();
 	return (shell.exit_status);

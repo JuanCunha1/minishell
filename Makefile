@@ -1,6 +1,22 @@
 # Compiler and flags
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -MMD -MP #-fsanitize=address -fsanitize=leak
+
+# ---------------------------------------------------------
+#                        BANNER
+# ---------------------------------------------------------
+define BANNER
+\033[1;36m\n\
+███╗   ███╗██╗███╗   ██╗██╗███████╗██╗  ██╗███████╗██╗     ██╗\n\
+████╗ ████║██║████╗  ██║██║██╔════╝██║  ██║██╔════╝██║     ██║\n\
+██╔████╔██║██║██╔██╗ ██║██║███████╗███████║█████╗  ██║     ██║\n\
+██║╚██╔╝██║██║██║╚██╗██║██║╚════██║██╔══██║██╔══╝  ██║     ██║\n\
+██║ ╚═╝ ██║██║██║ ╚████║██║███████║██║  ██║███████╗███████╗███████╗\n\
+╚═╝     ╚═╝╚═╝╚═╝  ╚═══╝╚═╝╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝\n\
+\033[1;33m                >>>   M I N I S H E L L   <<<\033[0m\n
+endef
+export BANNER
+
+CFLAGS = -DMINISHELL_BANNER="\"$(BANNER)\"" -Wall -Wextra -Werror -MMD -MP #-fsanitize=address -fsanitize=leak
 READLINE = -lreadline -lncurses
 
 MAKEFLAGS += --no-print-directory
@@ -53,7 +69,8 @@ EXECUTE_SRCS = \
 		$(SRCS_DIR)/exec/utils.c
 
 SIGNALS_SRCS = \
-		$(SRCS_DIR)/signal/signals.c
+		$(SRCS_DIR)/signal/signals.c \
+		$(SRCS_DIR)/signal/heredoc_signal.c
 
 SYNTAX_ERROR = \
 		$(SRCS_DIR)/syntax_error/syntax_error.c
@@ -61,6 +78,7 @@ SYNTAX_ERROR = \
 # Utility functions
 GLOBAL_UTILS = \
 		$(SRCS_DIR)/global_utils/free_utils.c \
+		$(SRCS_DIR)/global_utils/free_utils2.c \
 		$(SRCS_DIR)/global_utils/init.c \
 		$(SRCS_DIR)/global_utils/env.c
 

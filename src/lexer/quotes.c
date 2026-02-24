@@ -24,7 +24,7 @@ t_type	get_operator_type(const char *s)
 		return (T_REDIR_IN);
 	if (s[0] == '|')
 		return (T_PIPE);
-	return (T_STRING);
+	return (T_CMD);
 }
 
 void	emit_word(t_lexer *lx)
@@ -34,7 +34,7 @@ void	emit_word(t_lexer *lx)
 	if (lx->buf_len == 0 && !lx->had_quotes)
 		return ;
 	buf_add(lx, '\0');
-	tok = create_token(ft_strdup(lx->buffer), T_STRING);
+	tok = create_token(ft_strdup(lx->buffer), T_CMD);
 	if (!tok)
 		return ;
 	tok->quoted = lx->had_quotes;

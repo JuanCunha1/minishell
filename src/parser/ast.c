@@ -19,7 +19,7 @@ static char	**parse_args_util(t_token **token, char **args)
 
 	start = *token;
 	i = 0;
-	while (*token && (*token)->type_tok == T_STRING)
+	while (*token && (*token)->type_tok == T_CMD)
 	{
 		args[i] = ft_strdup((*token)->data);
 		if (!args[i])
@@ -45,7 +45,7 @@ char	**parse_args(t_token **token)
 
 	size = 0;
 	tmp = *token;
-	while (tmp && tmp->type_tok == T_STRING)
+	while (tmp && tmp->type_tok == T_CMD)
 	{
 		size++;
 		tmp = tmp->next;

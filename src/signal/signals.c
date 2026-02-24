@@ -11,23 +11,6 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include <signal.h>
-
-void	handle_signal_heredoc(int sig)
-{
-	if (sig == SIGQUIT)
-		return ;
-	g_signal = 130;
-	write(1, "\n", 1);
-	exit(130);
-}
-
-void	set_signals_heredoc(void)
-{
-	g_signal = 0;
-	signal(SIGINT, handle_signal_heredoc);
-	signal(SIGQUIT, SIG_IGN);
-}
 
 static void	handle_signal(int sig)
 {

@@ -103,7 +103,6 @@ int	execute_cmd(t_ast *node, char ***envp)
 		exit(127);
 	}
 	status = return_status(pid, &sig);
-	set_signals_prompt();
 	sig_write(sig);
 	return (status);
 }
@@ -113,7 +112,7 @@ int	execute_ast(t_ast *node, char ***envp, int last_status)
 	if (!node)
 		return (1);
 	set_signals_parent_exec();
-	if(prepare_heredocs(node, *envp, last_status))
+	if (prepare_heredocs(node, *envp, last_status))
 		return (130);
 	if (node->type == T_PIPE)
 		return (execute_pipe(node, envp));

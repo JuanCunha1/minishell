@@ -41,6 +41,15 @@ char	*expand_string_for_heredoc(const char *input, char **env,
 	return (lx.buffer);
 }
 
+static int	print_error(char *delimiter)
+{
+	ft_putstr_fd("minishell: warning: here-document delimited"\
+" by end-of-file (wanted `", 1);
+	ft_putstr_fd(delimiter, 1);
+	ft_putendl_fd("')", 1);
+	return (0);
+}
+
 int	loop_heredoc(t_redir hd, char **envp, int last_status,
 	int fd)
 {
@@ -51,12 +60,7 @@ int	loop_heredoc(t_redir hd, char **envp, int last_status,
 	{
 		line = readline("> ");
 		if (!line)
-		{
-			ft_putstr_fd("minishell: warning: here-document delimited by end-of-file (wanted `", 1);
-			ft_putstr_fd(hd.file, 1);
-			ft_putendl_fd("')", 1);
-			return(0);
-		}
+			return (print_error(hd.file));
 		if (!ft_strncmp(line, hd.file, ft_strlen(hd.file) + 1))
 		{
 			free(line);
@@ -88,7 +92,7 @@ int	read_heredoc(t_redir heredoc, char **envp, int last_status)
 	{
 		close(pipefd[0]);
 		set_signals_heredoc();
-		if(loop_heredoc(heredoc, envp, last_status, pipefd[1]) == -1)
+		if (loop_heredoc(heredoc, envp, last_status, pipefd[1]) == -1)
 			exit(1);
 		close(pipefd[1]);
 		exit(0);
@@ -96,11 +100,11 @@ int	read_heredoc(t_redir heredoc, char **envp, int last_status)
 	close(pipefd[1]);
 	waitpid(pid, &status, 0);
 	if (WIFEXITED(status) && WEXITSTATUS(status) == 130)
-    {
-        close(pipefd[0]);
-        return (-1);
-    }
-    return (pipefd[0]);
+	{
+		close(pipefd[0]);
+		return (-1);
+	}
+	return (pipefd[0]);
 }
 
 int	prepare_heredocs(t_ast *ast, char **envp, int last_status)

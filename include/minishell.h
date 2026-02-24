@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #ifndef MINISHELL_H
-
 # define MINISHELL_H
 
 /* ============================== INCLUDES ============================== */
@@ -62,6 +61,10 @@
 
 # define COLOR_RESET    "\x1b[0m"
 
+#ifndef MINISHELL_BANNER
+# define MINISHELL_BANNER ""
+#endif
+
 /* ============================== GLOBALS =============================== */
 
 extern volatile sig_atomic_t	g_signal;
@@ -71,12 +74,8 @@ extern volatile sig_atomic_t	g_signal;
 typedef enum e_type
 {
 	T_STRING,
-	T_SIMPLE_QUOTED,
-	T_DOUBLE_QUOTED,
-	T_APPEND,
-	T_COMMAND,
+	T_CMD,
 	T_PIPE,
-	T_FLOW_OPERATOR,
 	T_REDIR_OUT,
 	T_REDIR_IN,
 	T_REDIR_APPEND,
@@ -201,7 +200,7 @@ void	set_signals_prompt(void);
 void	set_signals_parent_exec(void);
 void	set_signals_child(void);
 void	sigint_handler(int sig);
-void	handle_signal_heredoc(int sig);
+
 void	set_signals_heredoc(void);
 
 /* ============================== BUILTINS ============================== */

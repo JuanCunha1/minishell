@@ -71,7 +71,7 @@ static int	update_env_var(char ***envp, char *arg)
 	return (0);
 }
 
-static int new_env(char *arg, char ***envp)
+static int	new_env(char *arg, char ***envp)
 {
 	int		idx;
 	char	*tmp;
