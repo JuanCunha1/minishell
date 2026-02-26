@@ -15,7 +15,7 @@
 
 volatile sig_atomic_t	g_signal = 0;
 
-void	multiple_line(t_shell *sh, char **lines)
+static void	multiple_line(t_shell *sh, char **lines)
 {
 	int	i;
 
@@ -41,62 +41,14 @@ void	multiple_line(t_shell *sh, char **lines)
 	}
 }
 
-static char	*shorten_home(char *pwd, char *home)
-{
-	char	*tmp;
-
-	if (!pwd || !home)
-		return (ft_strdup(pwd));
-	if (!ft_strncmp(pwd, home, ft_strlen(home)))
-	{
-		tmp = ft_strjoin("~", pwd + ft_strlen(home));
-		if (!tmp)
-			return (NULL);
-		return (tmp);
-	}
-	return (ft_strdup(pwd));
-}
-
-static char	*write_pwd(char **envp)
-{
-	char	*pwd;
-	char	*home;
-	char	*short_pwd;
-	char	*tmp;
-	char	*prompt;
-
-	pwd = get_env_value("PWD", envp);
-	home = get_env_value("HOME", envp);
-	if (!pwd)
-		pwd = "";
-	short_pwd = shorten_home(pwd, home);
-	if (!short_pwd)
-		return (NULL);
-	tmp = ft_strjoin("\001\033[1;32m\002minishell:\001\033[0m\002:"\
-"\001\033[1;34m\002", short_pwd);
-	free(short_pwd);
-	if (!tmp)
-		return (NULL);
-	prompt = ft_strjoin(tmp, "\001\033[0m\002$ ");
-	free(tmp);
-	return (prompt);
-}
-
-int	shell_loop(t_shell *sh)
+static int	shell_loop(t_shell *sh)
 {
 	char	**lines;
 
-	set_signals_prompt();
 	if (g_signal == 130)
 		sh->exit_status = 130;
-	if (sh->str == NULL)
-	{
-		printf("exit\n");
-		return (0);
-	}
 	if (sh->str[0] == '\0')
 		return (1);
-	add_history(sh->str);
 	lines = ft_split(sh->str, '\n');
 	free(sh->str);
 	sh->str = NULL;
@@ -107,24 +59,61 @@ int	shell_loop(t_shell *sh)
 	return (1);
 }
 
+static int	ft_non_interactive(t_shell *shell)
+{
+	char	*tmp;
+
+	shell->str = get_next_line(0);
+	if (!shell->str)
+	{
+		return (0);
+	}
+	tmp = ft_strtrim(shell->str, "\n");
+	free(shell->str);
+	shell->str = tmp;
+	return (1);
+}
+
+static int	ft_interactive(t_shell *shell)
+{
+	char	*prompt;
+
+	set_signals_prompt();
+	prompt = write_pwd(shell->envp);
+	if (!prompt)
+		return (1);
+	shell->str = readline(prompt);
+	free(prompt);
+	if (shell->str == NULL)
+	{
+		printf("exit\n");
+		return (0);
+	}
+	add_history(shell->str);
+	return (1);
+}
+
 int	main(int ac, char **av, char **envp)
 {
 	t_shell	shell;
-	char	*prompt;
 	int		loop;
+	int		interactive;
 
 	(void)ac;
 	(void)av;
 	loop = 1;
+	interactive = isatty(STDIN_FILENO);
 	shell = init_shell(envp);
-	printf("%s", MINISHELL_BANNER);
+	if (interactive)
+		printf("%s", MINISHELL_BANNER);
 	while (loop)
 	{
-		prompt = write_pwd(shell.envp);
-		if (!prompt)
-			continue ;
-		shell.str = readline(prompt);
-		free(prompt);
+		if (interactive)
+			loop = ft_interactive(&shell);
+		else
+			loop = ft_non_interactive(&shell);
+		if (!loop)
+			break ;
 		loop = shell_loop(&shell);
 	}
 	free_string_array(shell.envp);

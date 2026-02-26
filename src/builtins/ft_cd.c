@@ -44,7 +44,8 @@ int	check_path(char *path)
 		return (1);
 	if (chdir(path) == -1)
 	{
-		perror("cd");
+		ft_putstr_fd("minishell: cd: ", 2);
+		perror(path);
 		return (1);
 	}
 	return (0);

@@ -72,8 +72,9 @@ SIGNALS_SRCS = \
 		$(SRCS_DIR)/signal/signals.c \
 		$(SRCS_DIR)/signal/heredoc_signal.c
 
-SYNTAX_ERROR = \
-		$(SRCS_DIR)/syntax_error/syntax_error.c
+SYNTAX_SRCS = \
+		$(SRCS_DIR)/syntax/syntax_error.c \
+		$(SRCS_DIR)/syntax/syntax_main.c
 
 # Utility functions
 GLOBAL_UTILS = \
@@ -101,7 +102,7 @@ SRCS =	$(MAIN) \
 		$(BUILTIN_SRCS) \
 		$(EXECUTE_SRCS) \
 		$(SIGNALS_SRCS) \
-		$(SYNTAX_ERROR) \
+		$(SYNTAX_SRCS) \
 		$(GLOBAL_UTILS)
 
 # Object files

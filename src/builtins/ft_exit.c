@@ -32,35 +32,24 @@ static int	is_numeric(char *s)
 	return (1);
 }
 
-static int	exit_check(char **args)
+int	ft_exit(char **args)
 {
-	char	*str;
+	long	status;
 
-	str = args[1];
-	if (!is_numeric(str))
+	if (!args[1])
+		return (-2);
+	if (!is_numeric(args[1]))
 	{
-		printf("exit\n");
-		printf("bash: exit: %s: numeric argument required\n", str);
-		exit(2);
+		ft_putstr_fd("minishell: exit: ", 2);
+		ft_putstr_fd(args[1], 2);
+		ft_putendl_fd(" numeric argument required", 2);
+		return (2);
 	}
 	if (args[2])
 	{
-		printf("bash: exit: too many arguments\n");
-		return (0);
+		ft_putendl_fd("minishell: exit: too many arguments", 2);
+		return (-1);
 	}
-	printf("exit\n");
-	exit(ft_atoi(str));
-	return (1);
-}
-
-int	ft_exit(char **args)
-{
-	if (!args[1])
-	{
-		printf("exit\n");
-		exit(0);
-	}
-	if (!exit_check(args))
-		return (2);
-	return (1);
+	status = ft_atoi(args[1]);
+	return ((unsigned char)status);
 }

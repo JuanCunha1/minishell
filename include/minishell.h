@@ -41,9 +41,9 @@
 
 /* ============================== BANNER ================================ */
 
-#ifndef MINISHELL_BANNER
-# define MINISHELL_BANNER ""
-#endif
+# ifndef MINISHELL_BANNER
+#  define MINISHELL_BANNER ""
+# endif
 
 /* ============================== GLOBALS =============================== */
 
@@ -185,6 +185,7 @@ void	set_signals_heredoc(void);
 
 /* ============================== BUILTINS ============================== */
 
+int		execute_builtin_parent(char **args, char ***envp);
 int		is_builtin(char *str);
 int		builtin(char **args, char ***envp);
 
@@ -204,7 +205,7 @@ int		is_valid_identifier(char *s);
 
 t_shell	init_shell(char **envp);
 void	free_shell(t_shell *sh);
-
+char	*write_pwd(char **envp);
 /* ===================================================================== */
 
 #endif

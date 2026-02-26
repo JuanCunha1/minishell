@@ -32,7 +32,7 @@ static char	*resolve_path(char **args, char ***envp, int *alloc)
 	return (path);
 }
 
-int	exec_builtin_parent(t_ast *node, char ***envp)
+static int	exec_builtin_parent(t_ast *node, char ***envp)
 {
 	int	saved_stdin;
 	int	saved_stdout;
@@ -42,7 +42,7 @@ int	exec_builtin_parent(t_ast *node, char ***envp)
 	saved_stdout = dup(STDOUT_FILENO);
 	if (apply_redirections(node->redirs))
 		return (1);
-	return_value = builtin(node->args, envp);
+	return_value = execute_builtin_parent(node->args, envp);
 	dup2(saved_stdin, STDIN_FILENO);
 	dup2(saved_stdout, STDOUT_FILENO);
 	close(saved_stdin);
@@ -109,6 +109,8 @@ int	execute_cmd(t_ast *node, char ***envp)
 
 int	execute_ast(t_ast *node, char ***envp, int last_status)
 {
+	int	return_status;
+
 	if (!node)
 		return (1);
 	set_signals_parent_exec();
@@ -116,5 +118,8 @@ int	execute_ast(t_ast *node, char ***envp, int last_status)
 		return (130);
 	if (node->type == T_PIPE)
 		return (execute_pipe(node, envp));
-	return (execute_cmd(node, envp));
+	return_status = execute_cmd(node, envp);
+	if (return_status == -1)
+		exit(last_status);
+	return (return_status);
 }

@@ -12,6 +12,23 @@
 
 #include "minishell.h"
 
+int	execute_builtin_parent(char **args, char ***envp)
+{
+	int	return_status;
+
+	if (ft_strncmp(args[0], "exit", 5) == 0)
+	{
+		printf("exit\n");
+		return_status = ft_exit(args);
+		if (return_status == -2)
+			return (-1);
+		if (return_status != -1)
+			exit(return_status);
+		return (2);
+	}
+	return (builtin(args, envp));
+}
+
 int	is_builtin(char *str)
 {
 	if (!str)
