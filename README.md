@@ -47,10 +47,11 @@ The project is organized into the following modules:
   * Converts user input into tokens.
   * Handles quoting, tokenizer states, and environment variable expansion.
 
-* **src/syntax_error/**
+* **src/syntax/**
 
   * Checks tokenized input for syntax errors before the parser builds the command structures.
-
+  * Handle prompt string
+    
 * **src/parser/**
 
   * Builds internal command structures (AST) from tokens.
