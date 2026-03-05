@@ -1,8 +1,0 @@
-include
-libft
-Makefile
-minishell
-objs
-out
-README.md
-src

@@ -70,14 +70,6 @@ typedef struct s_token
 	struct s_token	*next;
 }	t_token;
 
-typedef struct s_heredoc
-{
-	char				*delimiter;
-	int					expand;
-	int					fd;
-	struct s_heredoc	*next;
-}	t_heredoc;
-
 typedef struct s_redir
 {
 	t_type			type;// IN OUT APPEND HEREDOC
