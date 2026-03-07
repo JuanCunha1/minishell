@@ -83,7 +83,7 @@ Overall flow:
 Clone the repository and compile the project:
 
 ```bash
-git clone <repository_url>
+git clone https://github.com/JuanCunha1/minishell.git
 cd minishell
 make
 ```

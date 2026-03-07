@@ -42,7 +42,6 @@ extern volatile sig_atomic_t	g_signal;
 
 typedef enum e_type
 {
-	T_STRING,
 	T_CMD,
 	T_PIPE,
 	T_REDIR_OUT,
