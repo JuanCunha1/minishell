@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-t_ast	*pipe_pa(t_ast *left, t_ast *right)
+static t_ast	*create_pipe_node(t_ast *left, t_ast *right)
 {
 	t_ast	*node;
 
@@ -46,7 +46,7 @@ t_ast	*parse_pipe(t_token **token)
 			free_ast(left);
 			return (NULL);
 		}
-		left = pipe_pa(left, right);
+		left = create_pipe_node(left, right);
 		if (!left)
 			return (NULL);
 	}

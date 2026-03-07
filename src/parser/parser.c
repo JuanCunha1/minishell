@@ -12,6 +12,26 @@
 
 #include "minishell.h"
 
+int	add_arg(t_ast *node, char *arg)
+{
+	int		i;
+	char	**tmp;
+
+	i = 0;
+	if (node->args)
+		while (node->args[i])
+			i++;
+	tmp = realloc(node->args, sizeof(char *) * (i + 2));
+	if (!tmp)
+		return (0);
+	node->args = tmp;
+	node->args[i] = ft_strdup(arg);
+	if (!node->args[i])
+		return (0);
+	node->args[i + 1] = NULL;
+	return (1);
+}
+
 int	is_operator(t_type type)
 {
 	return (type == T_PIPE

@@ -66,15 +66,21 @@ static int	redirection(t_token **token, t_ast *node)
 {
 	t_redir	*redir;
 
-	while (*token && is_redirection((*token)->type_tok))
+	while (*token && (*token)->type_tok != T_PIPE)
 	{
-		redir = parse_redir(token);
-		if (!redir)
+		if (is_redirection((*token)->type_tok))
 		{
-			free_ast(node);
-			return (0);
+			redir = parse_redir(token);
+			if (!redir)
+				return (0);
+			add_redir(&node->redirs, redir);
 		}
-		add_redir(&node->redirs, redir);
+		else
+		{
+			if (!add_arg(node, (*token)->data))
+				return (0);
+			*token = (*token)->next;
+		}
 	}
 	return (1);
 }
@@ -87,15 +93,10 @@ t_ast	*parse_command_segment(t_token **token)
 	if (!node)
 		return (NULL);
 	if (!redirection(token, node))
-		return (NULL);
-	node->args = parse_args(token);
-	if (!node->args)
 	{
 		free_ast(node);
 		return (NULL);
 	}
-	if (!redirection(token, node))
-		return (NULL);
 	node->type = T_CMD;
 	return (node);
 }

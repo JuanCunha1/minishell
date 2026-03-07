@@ -16,27 +16,16 @@
 /* ============================== INCLUDES ============================== */
 
 # include <stdio.h>
-
 # include <stdlib.h>
-
 # include <unistd.h>
-
 # include <signal.h>
-
 # include <errno.h>
-
 # include <fcntl.h>
-
 # include <sys/types.h>
-
 # include <sys/stat.h>
-
 # include <sys/wait.h>
-
 # include <readline/readline.h>
-
 # include <readline/history.h>
-
 # include "libft.h"
 
 /* ============================== BANNER ================================ */
@@ -130,9 +119,7 @@ t_redir	*init_redir(t_type type);
 t_ast	*parse_pipe(t_token **tokens);
 t_ast	*parse_redirection(t_token **token);
 t_ast	*parse_command_segment(t_token **token);
-
-char	**parse_command(t_token **tokens);
-char	**parse_args(t_token **token);
+int		add_arg(t_ast *node, char *arg);
 
 void	add_redir(t_redir **list, t_redir *new_redir);
 t_redir	*create_redir(char *op, char *file);
@@ -187,9 +174,9 @@ int		ft_pwd(void);
 int		ft_exit(char **args);
 int		ft_unset(char **args, char ***envp);
 int		ft_export(char **args, char ***envp);
-int		print_export_sorted(char **envp);
 int		ft_env(char **args, char **envp);
 
+int		print_export_sorted(char **envp);
 void	handle_export_arg(char ***envp, char *arg);
 int		is_valid_identifier(char *s);
 
@@ -198,6 +185,7 @@ int		is_valid_identifier(char *s);
 t_shell	init_shell(char **envp);
 void	free_shell(t_shell *sh);
 char	*write_pwd(char **envp);
+
 /* ===================================================================== */
 
 #endif

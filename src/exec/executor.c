@@ -83,7 +83,7 @@ int	execute_cmd(t_ast *node, char ***envp)
 	pid_t	pid;
 	int		status;
 	int		sig;
-
+	
 	if (!node->args || !node->args[0])
 		return (0);
 	if (is_builtin(node->args[0]))
@@ -97,6 +97,7 @@ int	execute_cmd(t_ast *node, char ***envp)
 	}
 	if (pid == 0)
 	{
+		
 		set_signals_child();
 		apply_redirections(node->redirs);
 		execute(node->args, envp);
