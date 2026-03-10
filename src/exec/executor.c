@@ -98,7 +98,7 @@ int	execute_cmd(t_ast *node, char ***envp)
 	if (pid == 0)
 	{
 		if (apply_redirections(node->redirs))
-			return (1);
+			exit (1);
 		execute(node->args, envp);
 		exit(127);
 	}
@@ -120,6 +120,6 @@ int	execute_ast(t_ast *node, char ***envp, int last_status)
 		return (execute_pipe(node, envp));
 	ret = execute_cmd(node, envp);
 	if (ret == -1)
-		exit(last_status);
+		return (last_status + 256);
 	return (ret);
 }

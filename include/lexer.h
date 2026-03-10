@@ -15,6 +15,8 @@
 
 # include <minishell.h>
 
+# define TOKEN_BUFFER 256
+
 typedef struct s_token	t_token;
 typedef enum e_type		t_type;
 

@@ -28,6 +28,10 @@
 # include <readline/history.h>
 # include "libft.h"
 
+/* ============================== DEFINES =============================== */
+
+# define ARG_INIT_CAP 32
+
 /* ============================== GLOBALS =============================== */
 
 extern volatile sig_atomic_t	g_signal;
@@ -68,6 +72,8 @@ typedef struct s_ast
 	t_redir			*redirs;
 	struct s_ast	*left;
 	struct s_ast	*right;
+	int				args_count;
+	int				args_cap;
 }	t_ast;
 
 typedef struct s_shell
@@ -179,6 +185,7 @@ t_shell	init_shell(char **envp);
 void	free_shell(t_shell *sh);
 char	*write_pwd(char **envp);
 void	print_banner(void);
+int		cleanup(t_shell *sh);
 /* ===================================================================== */
 
 #endif

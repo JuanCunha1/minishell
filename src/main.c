@@ -18,26 +18,26 @@ volatile sig_atomic_t	g_signal = 0;
 static void	multiple_line(t_shell *sh, char **lines)
 {
 	int	i;
+	int	clean;
 
 	i = 0;
 	while (lines[i])
 	{
+		clean = 0;
 		sh->tokens = lexer(lines[i], sh->envp, sh->exit_status);
 		if (!sh->tokens)
-		{
-			i++;
-			continue ;
-		}
-		if (check_tokens(sh->tokens) == 2)
+			clean = 1;
+		else if (check_tokens(sh->tokens) == 2)
 		{
 			sh->exit_status = 2;
-			i++;
-			continue ;
+			clean = 1;
 		}
-		sh->ast = parser(sh);
-		sh->exit_status = execute_ast(sh->ast, &sh->envp, sh->exit_status);
-		free_shell(sh);
-		i++;
+		if (clean == 0)
+		{
+			sh->ast = parser(sh);
+			sh->exit_status = execute_ast(sh->ast, &sh->envp, sh->exit_status);
+		}
+		i += cleanup(sh);
 	}
 }
 

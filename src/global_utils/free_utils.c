@@ -54,10 +54,12 @@ void	free_ast(t_ast *node)
 	free_ast(node->right);
 	if (node->args)
 	{
-		while (node->args[i])
-			free(node->args[i++]);
+		while (i < node->args_count)
+		{
+			free(node->args[i]);
+			i++;
+		}
 		free(node->args);
-		node->args = NULL;
 	}
 	free_redirs(node->redirs);
 	node->redirs = NULL;

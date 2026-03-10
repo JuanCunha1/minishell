@@ -36,7 +36,15 @@ t_ast	*init_ast(void)
 	ast->left = NULL;
 	ast->right = NULL;
 	ast->redirs = NULL;
-	ast->args = NULL;
+	ast->args_count = 0;
+	ast->args_cap = ARG_INIT_CAP;
+	ast->args = malloc(sizeof(char *) * ARG_INIT_CAP);
+	if (!ast->args)
+	{
+		free_ast(ast);
+		return (NULL);
+	}
+	ast->args[0] = NULL;
 	return (ast);
 }
 

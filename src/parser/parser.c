@@ -12,23 +12,36 @@
 
 #include "minishell.h"
 
+static int	expand_args(t_ast *node)
+{
+	char	**new_args;
+	int		i;
+
+	new_args = malloc(sizeof(char *) * node->args_cap * 2);
+	if (!new_args)
+		return (0);
+	i = 0;
+	while (i < node->args_count)
+	{
+		new_args[i] = node->args[i];
+		i++;
+	}
+	free(node->args);
+	node->args = new_args;
+	node->args_cap *= 2;
+	return (1);
+}
+
 int	add_arg(t_ast *node, char *arg)
 {
-	int		i;
-	char	**tmp;
-
-	i = 0;
-	if (node->args)
-		while (node->args[i])
-			i++;
-	tmp = realloc(node->args, sizeof(char *) * (i + 2));
-	if (!tmp)
+	if (node->args_count + 1 >= node->args_cap)
+		if (!expand_args(node))
+			return (0);
+	node->args[node->args_count] = ft_strdup(arg);
+	if (!node->args[node->args_count])
 		return (0);
-	node->args = tmp;
-	node->args[i] = ft_strdup(arg);
-	if (!node->args[i])
-		return (0);
-	node->args[i + 1] = NULL;
+	node->args_count++;
+	node->args[node->args_count] = NULL;
 	return (1);
 }
 

@@ -32,3 +32,15 @@ void	free_shell(t_shell *sh)
 		sh->ast = NULL;
 	}
 }
+
+int	cleanup(t_shell *sh)
+{
+	free_shell(sh);
+	if (sh->exit_status >= 256)
+	{
+		free_string_array(sh->envp);
+		rl_clear_history();
+		exit(sh->exit_status - 256);
+	}
+	return (1);
+}

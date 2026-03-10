@@ -20,11 +20,13 @@ int	execute_builtin_parent(char **args, char ***envp)
 	{
 		printf("exit\n");
 		return_status = ft_exit(args);
+		if (return_status == -1)
+			return (1);
 		if (return_status == -2)
 			return (-1);
-		if (return_status != -1)
-			exit(return_status);
-		return (2);
+		if (return_status == 258)
+			exit(2);
+		exit(return_status);
 	}
 	return (builtin(args, envp));
 }

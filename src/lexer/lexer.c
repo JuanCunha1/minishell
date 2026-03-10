@@ -22,7 +22,7 @@ t_lexer	init_lexer(const char *input, char **env, int exit_status)
 	lx.state = LX_NORMAL;
 	lx.tokens = NULL;
 	lx.env = envp_dup(env);
-	lx.buf_cap = 32;
+	lx.buf_cap = TOKEN_BUFFER;
 	lx.buffer = malloc(lx.buf_cap);
 	if (!lx.buffer)
 		lx.state = LX_ERROR;
