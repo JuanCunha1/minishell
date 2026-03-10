@@ -17,7 +17,7 @@ int	redirect_fd(int fd, int target)
 	if (fd != target)
 	{
 		if (dup2(fd, target) < 0)
-		{	
+		{
 			perror("dup2");
 			return (-1);
 		}

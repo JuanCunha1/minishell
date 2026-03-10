@@ -1,152 +1,120 @@
-# Compiler and flags
+# **************************************************************************** #
+#                                   CONFIG                                     #
+# **************************************************************************** #
+
+NAME = minishell
+
 CC = cc
-
-# ---------------------------------------------------------
-#                        BANNER
-# ---------------------------------------------------------
-define BANNER
-\033[1;36m\n\
-███╗   ███╗██╗███╗   ██╗██╗███████╗██╗  ██╗███████╗██╗     ██╗\n\
-████╗ ████║██║████╗  ██║██║██╔════╝██║  ██║██╔════╝██║     ██║\n\
-██╔████╔██║██║██╔██╗ ██║██║███████╗███████║█████╗  ██║     ██║\n\
-██║╚██╔╝██║██║██║╚██╗██║██║╚════██║██╔══██║██╔══╝  ██║     ██║\n\
-██║ ╚═╝ ██║██║██║ ╚████║██║███████║██║  ██║███████╗███████╗███████╗\n\
-╚═╝     ╚═╝╚═╝╚═╝  ╚═══╝╚═╝╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝\n\
-\033[1;33m                >>>   M I N I S H E L L   <<<\033[0m\n
-endef
-export BANNER
-
-CFLAGS = -DMINISHELL_BANNER="\"$(BANNER)\"" -Wall -Wextra -Werror -MMD -MP #-fsanitize=address -fsanitize=leak
+CFLAGS = -Wall -Wextra -Werror -MMD -MP
 READLINE = -lreadline -lncurses
 
 MAKEFLAGS += --no-print-directory
-# Program name
-NAME = minishell
 
-# Directories
 SRCS_DIR = src
 OBJS_DIR = objs
-INCLUDES_DIR = include
-DIRS := $(shell find $(SRCS_DIR) -type d | sed "s|^$(SRCS_DIR)|$(OBJS_DIR)|")
+INCLUDES = -Iinclude -Ilibft
 
-# Includes
-INCLUDES_FLAG = -I$(INCLUDES_DIR) -Ilibft/
-
-# Libft
 LIBFT = libft/libft.a
 LIBS = -Llibft -lft $(READLINE)
 
-# ---------------------------------------------------------
-#                 SOURCE FILE DETECTION
-# ---------------------------------------------------------
 
-# Main only in src/
-MAIN = $(SRCS_DIR)/main.c
+# **************************************************************************** #
+#                                   SOURCES                                    #
+# **************************************************************************** #
 
-# Parser sources
+MAIN = src/main.c
+
 PARSER_SRCS = \
-		$(SRCS_DIR)/parser/parser.c \
-		$(SRCS_DIR)/parser/pipe.c \
-		$(SRCS_DIR)/parser/redirection.c
+	src/parser/parser.c \
+	src/parser/pipe.c \
+	src/parser/redirection.c
 
-
-# Lexer sources
 LEXER_SRCS = \
-		$(SRCS_DIR)/lexer/lexer.c \
-		$(SRCS_DIR)/lexer/tokenizer.c \
-		$(SRCS_DIR)/lexer/quotes.c \
-		$(SRCS_DIR)/lexer/states.c \
-		$(SRCS_DIR)/lexer/expand_var.c
+	src/lexer/lexer.c \
+	src/lexer/tokenizer.c \
+	src/lexer/quotes.c \
+	src/lexer/states.c \
+	src/lexer/expand_var.c
 
-# execute sources
 EXECUTE_SRCS = \
-		$(SRCS_DIR)/exec/executor.c \
-		$(SRCS_DIR)/exec/get_path.c \
-		$(SRCS_DIR)/exec/exec_redirection.c \
-		$(SRCS_DIR)/exec/exec_pipe.c \
-		$(SRCS_DIR)/exec/exec_heredoc.c \
-		$(SRCS_DIR)/exec/utils.c
+	src/exec/executor.c \
+	src/exec/get_path.c \
+	src/exec/exec_redirection.c \
+	src/exec/exec_pipe.c \
+	src/exec/exec_heredoc.c \
+	src/exec/utils.c
 
 SIGNALS_SRCS = \
-		$(SRCS_DIR)/signal/signals.c \
-		$(SRCS_DIR)/signal/heredoc_signal.c
+	src/signal/signals.c \
+	src/signal/heredoc_signal.c
 
 SYNTAX_SRCS = \
-		$(SRCS_DIR)/syntax/syntax_error.c \
-		$(SRCS_DIR)/syntax/syntax_main.c
+	src/syntax/syntax_error.c \
+	src/syntax/syntax_main.c
 
-# Utility functions
 GLOBAL_UTILS = \
-		$(SRCS_DIR)/global_utils/free_utils.c \
-		$(SRCS_DIR)/global_utils/free_utils2.c \
-		$(SRCS_DIR)/global_utils/init.c \
-		$(SRCS_DIR)/global_utils/env.c
+	src/global_utils/free_utils.c \
+	src/global_utils/free_utils2.c \
+	src/global_utils/init.c \
+	src/global_utils/env.c \
+	src/global_utils/banner.c
 
-# Builtin sources
 BUILTIN_SRCS = \
-		$(SRCS_DIR)/builtins/ft_pwd.c \
-		$(SRCS_DIR)/builtins/ft_echo.c \
-		$(SRCS_DIR)/builtins/ft_cd.c \
-		$(SRCS_DIR)/builtins/ft_exit.c \
-		$(SRCS_DIR)/builtins/ft_export.c \
-		$(SRCS_DIR)/builtins/ft_export_utils.c \
-		$(SRCS_DIR)/builtins/builtin.c \
-		$(SRCS_DIR)/builtins/ft_unset.c \
-		$(SRCS_DIR)/builtins/ft_env.c
+	src/builtins/ft_pwd.c \
+	src/builtins/ft_echo.c \
+	src/builtins/ft_cd.c \
+	src/builtins/ft_exit.c \
+	src/builtins/ft_export.c \
+	src/builtins/ft_export_utils.c \
+	src/builtins/builtin.c \
+	src/builtins/ft_unset.c \
+	src/builtins/ft_env.c
 
-# Combine all sources
-SRCS =	$(MAIN) \
-		$(PARSER_SRCS) \
-		$(LEXER_SRCS) \
-		$(BUILTIN_SRCS) \
-		$(EXECUTE_SRCS) \
-		$(SIGNALS_SRCS) \
-		$(SYNTAX_SRCS) \
-		$(GLOBAL_UTILS)
+SRCS = \
+	$(MAIN) \
+	$(PARSER_SRCS) \
+	$(LEXER_SRCS) \
+	$(EXECUTE_SRCS) \
+	$(SIGNALS_SRCS) \
+	$(SYNTAX_SRCS) \
+	$(GLOBAL_UTILS) \
+	$(BUILTIN_SRCS)
 
-# Object files
 OBJS = $(SRCS:$(SRCS_DIR)/%.c=$(OBJS_DIR)/%.o)
 
-# Colors
+DEPS = $(OBJS:.o=.d)
+
+# **************************************************************************** #
+#                                   COLORS                                     #
+# **************************************************************************** #
+
 GREEN  = \033[0;32m
 YELLOW = \033[0;33m
 RED    = \033[0;31m
 RESET  = \033[0m
 
-# ---------------------------------------------------------
-#                   COMPILATION RULES
-# ---------------------------------------------------------
+# **************************************************************************** #
+#                                   RULES                                      #
+# **************************************************************************** #
 
-all: $(OBJS_DIR) $(LIBFT) $(NAME)
+all: $(LIBFT) $(NAME)
 
-$(OBJS_DIR):
-	@mkdir -p $(DIRS)
-
-$(NAME): $(OBJS) $(LIBFT)
+$(NAME): $(OBJS) Makefile
 	@echo "$(GREEN) - Building $(NAME)...$(RESET)"
 	@$(CC) $(CFLAGS) $(OBJS) -o $(NAME) $(LIBS)
-	@echo "$(YELLOW) - Compilation finished!$(RESET)"
+	@echo "$(YELLOW) - Done!$(RESET)"
 
--include $(OBJS:.o=.d)
-
-$(OBJS_DIR)/%.o: $(SRCS_DIR)/%.c Makefile
+$(OBJS_DIR)/%.o: $(SRCS_DIR)/%.c
 	@mkdir -p $(dir $@)
-	@$(CC) $(CFLAGS) $(INCLUDES_FLAG) -c $< -o $@
+	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
-
-# ---------------------------------------------------------
-#                        LIBFT
-# ---------------------------------------------------------
 $(LIBFT):
 	@$(MAKE) -C libft
 
-# ---------------------------------------------------------
-#                      CLEAN RULES
-# ---------------------------------------------------------
 clean:
 	@rm -rf $(OBJS_DIR)
 	@$(MAKE) -C libft clean
-	@echo "$(RED) - Objects cleaned$(RESET)"
+	@echo "$(RED) - Objects removed$(RESET)"
 
 fclean: clean
 	@rm -f $(NAME)
@@ -154,5 +122,7 @@ fclean: clean
 	@echo "$(RED) - Full clean done$(RESET)"
 
 re: fclean all
+
+-include $(DEPS)
 
 .PHONY: all clean fclean re

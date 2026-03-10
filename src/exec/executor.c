@@ -83,7 +83,7 @@ int	execute_cmd(t_ast *node, char ***envp)
 	pid_t	pid;
 	int		status;
 	int		sig;
-	
+
 	if (!node->args || !node->args[0])
 		return (0);
 	if (is_builtin(node->args[0]))
@@ -97,7 +97,7 @@ int	execute_cmd(t_ast *node, char ***envp)
 	}
 	if (pid == 0)
 	{
-		if(apply_redirections(node->redirs))
+		if (apply_redirections(node->redirs))
 			return (1);
 		execute(node->args, envp);
 		exit(127);

@@ -105,7 +105,7 @@ int	main(int ac, char **av, char **envp)
 	interactive = isatty(STDIN_FILENO);
 	shell = init_shell(envp);
 	if (interactive)
-		printf("%s", MINISHELL_BANNER);
+		print_banner();
 	while (loop)
 	{
 		if (interactive)

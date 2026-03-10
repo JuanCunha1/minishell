@@ -28,12 +28,6 @@
 # include <readline/history.h>
 # include "libft.h"
 
-/* ============================== BANNER ================================ */
-
-# ifndef MINISHELL_BANNER
-#  define MINISHELL_BANNER ""
-# endif
-
 /* ============================== GLOBALS =============================== */
 
 extern volatile sig_atomic_t	g_signal;
@@ -184,7 +178,7 @@ int		is_valid_identifier(char *s);
 t_shell	init_shell(char **envp);
 void	free_shell(t_shell *sh);
 char	*write_pwd(char **envp);
-
+void	print_banner(void);
 /* ===================================================================== */
 
 #endif
