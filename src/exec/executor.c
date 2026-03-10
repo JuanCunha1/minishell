@@ -97,9 +97,8 @@ int	execute_cmd(t_ast *node, char ***envp)
 	}
 	if (pid == 0)
 	{
-		
-		set_signals_child();
-		apply_redirections(node->redirs);
+		if(apply_redirections(node->redirs))
+			return (1);
 		execute(node->args, envp);
 		exit(127);
 	}
@@ -110,7 +109,7 @@ int	execute_cmd(t_ast *node, char ***envp)
 
 int	execute_ast(t_ast *node, char ***envp, int last_status)
 {
-	int	return_status;
+	int	ret;
 
 	if (!node)
 		return (1);
@@ -119,8 +118,8 @@ int	execute_ast(t_ast *node, char ***envp, int last_status)
 		return (130);
 	if (node->type == T_PIPE)
 		return (execute_pipe(node, envp));
-	return_status = execute_cmd(node, envp);
-	if (return_status == -1)
+	ret = execute_cmd(node, envp);
+	if (ret == -1)
 		exit(last_status);
-	return (return_status);
+	return (ret);
 }

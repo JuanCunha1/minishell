@@ -51,6 +51,7 @@ int	apply_redirections(t_redir *redir)
 	int	fd;
 	int	target;
 
+	set_signals_child();
 	while (redir)
 	{
 		if (redir->type == T_HEREDOC)

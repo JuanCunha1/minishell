@@ -22,7 +22,8 @@ void	pipe_pid(t_pipe *p, char ***envp)
 		exit(1);
 	if (p->pipe_fd[0] != -1)
 		close(p->pipe_fd[0]);
-	apply_redirections(p->node->redirs);
+	if(apply_redirections(p->node->redirs))
+		exit(1);
 	execute(p->node->args, envp);
 	exit(1);
 }
