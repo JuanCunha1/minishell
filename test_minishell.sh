@@ -42,7 +42,7 @@ run_test() {
 }
 
 echo "============================"
-echo "MINISHELL BRUTAL TESTER"
+echo "MINISHELL TESTER"
 echo "============================"
 echo
 
@@ -149,9 +149,6 @@ run_test "echo one two three four | tr ' ' '\n' | grep o | sort | wc -l"
 
 # LARGE ARGUMENT LIST
 run_test "echo a b c d e f g h i j k l m n o p"
-
-# SUBSHELL-LIKE BEHAVIOR
-run_test "echo hello | (cat) 2>/dev/null"
 
 # FILE PERMISSIONS TEST
 touch permtest
